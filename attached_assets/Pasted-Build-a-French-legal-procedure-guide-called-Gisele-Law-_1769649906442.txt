@@ -1,0 +1,61 @@
+Build a French legal procedure guide called "Gisele Law" with a chatbot named "Gisele".
+
+WHAT IT DOES:
+- Step-by-step questionnaire helping users understand LEGAL PROCEDURES (not legal advice)
+- Calculates deadlines based on user-provided dates
+- Outputs a procedure timeline with steps, deadlines, documents needed
+
+TECH STACK:
+- Next.js 14 + Tailwind CSS + shadcn/ui
+- Supabase (database + auth)
+- French language UI
+
+FLOW:
+1. Welcome screen → disclaimer "Gisele ne donne pas de conseils juridiques"
+2. Question: "Quelle est la nature de votre problème?" → 2 choices:
+   - "Travail non payé" (unpaid work)
+   - "Propriété intellectuelle" (IP)
+3. Branching questions based on selection
+4. Output: Timeline with steps + calculated deadlines + "Trouver un avocat" button
+
+DOMAIN 1 - UNPAID WORK:
+Questions:
+- "Êtes-vous salarié(e) ou travailleur indépendant?"
+- If salarié: → Conseil de Prud'hommes procedure (3 year prescription)
+- If indépendant: → ask amount, then route to correct court
+- "Depuis quand le paiement est-il dû?" (to calculate deadline)
+
+Output steps for salarié:
+1. Mise en demeure (lettre recommandée) - Immediate
+2. Saisine Prud'hommes - if no response in 8 days
+3. Conciliation - within 2 months
+4. Jugement - if conciliation fails
+→ Show: "Prescription: [calculated date, 3 years from unpaid date]"
+
+DOMAIN 2 - INTELLECTUAL PROPERTY:
+Questions:
+- "Quel type?" → Copyright / Trademark / Patent
+- "Pouvez-vous prouver votre qualité d'auteur/titulaire?"
+- "Quand avez-vous découvert l'atteinte?"
+
+Output steps:
+1. Constitution de preuves (constat huissier)
+2. Mise en demeure
+3. Action en contrefaçon - TJ Paris
+→ Show: "Prescription: [calculated date, 5 years from discovery]"
+
+UI REQUIREMENTS:
+- Mobile-first, clean, professional
+- One question per screen
+- Progress bar
+- Back button
+- Final output: visual timeline (vertical steps)
+- Download PDF button
+- CTA: "Trouver un professionnel du droit"
+
+COLORS:
+- Primary: #1E3A5F (dark blue)
+- Accent: #C9A227 (gold)
+- Background: #F8F9FA
+
+Create the database schema for storing user sessions and procedure data.
