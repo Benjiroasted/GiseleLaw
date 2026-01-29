@@ -1,0 +1,45 @@
+Add a practitioner matching platform to Gisele Law.
+
+PART A - PRACTITIONER PROFILES:
+
+Create a new database table "practitioners":
+- id, user_id, name, photo_url, bio, specialties (array), location_city, location_department, experience_years, rates (JSON: {consultation, hourly}), accepts_legal_aid (boolean), similar_cases_count (JSON by category), rating, subscription_tier, created_at
+
+Create a new table "availability_slots":
+- id, practitioner_id, day_of_week, start_time, end_time, is_available
+
+Create a new table "bookings":
+- id, practitioner_id, procedure_id (link to Gisele session), client_name, client_email, client_phone, datetime, case_description, status (pending/confirmed/cancelled/completed), created_at
+
+PART B - USER FLOW:
+
+1. At the end of the questionnaire timeline, add a CTA button: "Trouver un professionnel du droit"
+
+2. This button goes to /practitioners page showing:
+   - Filter sidebar: specialty (auto-selected based on questionnaire domain), location (city/department), "Accepte l'aide juridictionnelle" toggle, price range slider
+   - Grid of practitioner cards: photo, name, specialty badges, location, rating stars, "Voir le profil" button
+
+3. Clicking a card goes to /practitioners/[id] profile page:
+   - Full bio, experience, specialties
+   - Rates displayed clearly
+   - "Affaires similaires traitées" count by category
+   - Availability calendar (week view, like Doctolib)
+   - "Prendre rendez-vous" button
+
+4. Booking flow:
+   - Select available time slot
+   - Form: name, email, phone, brief case description
+   - Confirm → saves to bookings table with status "pending"
+   - Show confirmation: "Votre demande a été envoyée. Le professionnel vous contactera sous 48h."
+
+PART C - PRACTITIONER DASHBOARD:
+
+Create /dashboard route (for practitioners only):
+- "Mes demandes" tab: list of incoming bookings with accept/decline buttons
+- "Mon profil" tab: edit bio, photo, specialties, rates, location
+- "Mes disponibilités" tab: set weekly availability slots
+- "Aide juridictionnelle" toggle
+
+Add seed data: Create 5 fake practitioners with different specialties (droit du travail, propriété intellectuelle, etc.) for testing.
+
+Keep the same design system (dark blue #1E3A5F, gold #C9A227). Make it mobile responsive.
