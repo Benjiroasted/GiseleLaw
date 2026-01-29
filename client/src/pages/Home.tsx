@@ -57,7 +57,7 @@ export default function Home() {
             transition={{ delay: 0.3, duration: 0.4 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link href="/procedure/new">
+            <Link href="/procedure/new/wizard">
               <Button size="lg" className="h-14 px-8 text-lg rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:-translate-y-0.5 transition-all bg-primary hover:bg-primary/90 text-white">
                 Démarrer une procédure
                 <ArrowRight className="ml-2 h-5 w-5" />
