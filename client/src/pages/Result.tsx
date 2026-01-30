@@ -1,4 +1,4 @@
-import { useRoute } from "wouter";
+import { useRoute, Link } from "wouter";
 import { useProcedure } from "@/hooks/use-procedures";
 import { Layout } from "@/components/Layout";
 import { TimelineStep } from "@/components/TimelineStep";
@@ -130,10 +130,12 @@ export default function Result() {
               <Printer className="mr-2 h-4 w-4" />
               Imprimer / PDF
             </Button>
-            <Button className="bg-accent hover:bg-accent/90 text-primary-foreground">
-              <Briefcase className="mr-2 h-4 w-4" />
-              Trouver un avocat
-            </Button>
+            <Link href="/practitioners">
+              <Button className="bg-accent hover:bg-accent/90 text-primary-foreground">
+                <Briefcase className="mr-2 h-4 w-4" />
+                Trouver un avocat
+              </Button>
+            </Link>
           </div>
         </div>
 

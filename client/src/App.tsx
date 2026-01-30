@@ -8,6 +8,7 @@ import Home from "@/pages/Home";
 import Wizard from "@/pages/Wizard";
 import Result from "@/pages/Result";
 import Dashboard from "@/pages/Dashboard";
+import Practitioners from "@/pages/Practitioners";
 import { useAuth } from "@/hooks/use-auth";
 
 function Router() {
@@ -22,6 +23,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/procedure/:id/wizard" component={Wizard} />
       <Route path="/procedure/:id/result" component={Result} />
+      <Route path="/practitioners" component={Practitioners} />
       
       {/* Protected Routes - simple check for now */}
       <Route path="/dashboard">
