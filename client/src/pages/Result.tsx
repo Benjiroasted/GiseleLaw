@@ -213,7 +213,7 @@ export default function Result() {
                 La mise en demeure est une étape cruciale. Elle fait courir les intérêts légaux et prouve votre bonne foi.
                 N'allez pas au tribunal sans l'avoir envoyée.
               </p>
-              <Button variant="link" className="text-amber-700 p-0 h-auto font-semibold">
+              <Button variant="ghost" className="text-amber-700 p-0 h-auto font-semibold">
                 Télécharger un modèle →
               </Button>
             </div>

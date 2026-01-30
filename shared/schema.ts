@@ -1,5 +1,5 @@
 import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -74,7 +74,7 @@ export const bookingsRelations = relations(bookings, ({ one }) => ({
   }),
 }));
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ many, one }) => ({
   procedures: many(procedures),
   practitionerProfile: one(practitioners, {
     fields: [users.id],
@@ -88,7 +88,7 @@ export const insertPractitionerSchema = createInsertSchema(practitioners).omit({
 export const insertBookingSchema = createInsertSchema(bookings).omit({ id: true, createdAt: true });
 
 // === EXPLICIT API CONTRACT TYPES ===
-export type { User, InsertUser } from "./models/auth";
+export type { User, UpsertUser as InsertUser } from "./models/auth";
 
 export type Procedure = typeof procedures.$inferSelect;
 export type InsertProcedure = z.infer<typeof insertProcedureSchema>;
