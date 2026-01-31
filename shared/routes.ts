@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertProcedureSchema, procedures } from './schema';
+import { insertProcedureSchema, procedures, practitioners } from './schema';
 
 // ============================================
 // SHARED ERROR SCHEMAS
@@ -62,6 +62,15 @@ export const api = {
       responses: {
         204: z.void(),
         404: errorSchemas.notFound,
+      },
+    },
+  },
+  practitioners: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/practitioners',
+      responses: {
+        200: z.array(z.custom<typeof practitioners.$inferSelect>()),
       },
     },
   },

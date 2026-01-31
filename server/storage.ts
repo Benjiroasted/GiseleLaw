@@ -2,13 +2,15 @@ import { db } from "./db";
 import {
   users,
   procedures,
+  practitioners,
   type User,
   type InsertUser,
   type Procedure,
   type InsertProcedure,
-  type UpdateProcedureRequest
+  type UpdateProcedureRequest,
+  type Practitioner
 } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, and, ilike, arrayContains, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -21,6 +23,7 @@ export interface IStorage {
   updateProcedure(id: number, updates: UpdateProcedureRequest): Promise<Procedure>;
   listProcedures(userId: string): Promise<Procedure[]>;
   deleteProcedure(id: number): Promise<void>;
+  listPractitioners(filters?: { specialty?: string; city?: string; acceptsLegalAid?: boolean }): Promise<Practitioner[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -58,6 +61,29 @@ export class DatabaseStorage implements IStorage {
 
   async deleteProcedure(id: number): Promise<void> {
     await db.delete(procedures).where(eq(procedures.id, id));
+  }
+
+  async listPractitioners(filters?: { specialty?: string; city?: string; acceptsLegalAid?: boolean }): Promise<Practitioner[]> {
+    let query = db.select().from(practitioners);
+    const conditions = [];
+
+    if (filters?.specialty) {
+      conditions.push(arrayContains(practitioners.specialties, [filters.specialty]));
+    }
+
+    if (filters?.city) {
+      conditions.push(ilike(practitioners.locationCity, `%${filters.city}%`));
+    }
+
+    if (filters?.acceptsLegalAid !== undefined) {
+      conditions.push(eq(practitioners.acceptsLegalAid, filters.acceptsLegalAid));
+    }
+
+    if (conditions.length > 0) {
+      return await query.where(and(...conditions));
+    }
+
+    return await query;
   }
 }
 

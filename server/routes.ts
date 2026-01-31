@@ -90,5 +90,16 @@ export async function registerRoutes(
     res.status(204).send();
   });
 
+  // === PRACTITIONERS API ===
+  app.get(api.practitioners.list.path, async (req, res) => {
+    const { specialty, city, accepts_legal_aid } = req.query;
+    const practitioners = await storage.listPractitioners({
+      specialty: specialty as string,
+      city: city as string,
+      acceptsLegalAid: accepts_legal_aid === 'true' ? true : accepts_legal_aid === 'false' ? false : undefined
+    });
+    res.json(practitioners);
+  });
+
   return httpServer;
 }
