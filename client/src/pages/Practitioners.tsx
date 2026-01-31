@@ -113,7 +113,7 @@ export default function Practitioners() {
               <div className="text-center py-12 bg-muted/30 rounded-lg border-2 border-dashed">
                 <p className="text-muted-foreground">Aucun praticien ne correspond à vos critères.</p>
                 <Button 
-                  variant="link" 
+                  variant="ghost" 
                   onClick={() => { setSpecialty("all"); setCity(""); setLegalAid(false); }}
                 >
                   Réinitialiser les filtres
