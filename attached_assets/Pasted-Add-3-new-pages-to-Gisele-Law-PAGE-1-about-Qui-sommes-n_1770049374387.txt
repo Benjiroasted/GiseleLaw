@@ -1,0 +1,27 @@
+Add 3 new pages to Gisele Law:
+
+PAGE 1 — /about — "Qui sommes-nous"
+- Section 1: "Notre mission" — placeholder text about making law accessible to everyone. Leave space for founder bios (name, photo, short bio for 2 people). Use placeholder content for now.
+- Section 2: "Pourquoi Gisele ?" — Explain the idea: most legal issues can be resolved without a lawyer if you know the right steps. Gisele guides you through the process.
+- Section 3: "Comment ça marche" — Two columns:
+  - Column 1: "Le guide Gisele" (the questionnaire). Steps: 1. Décrivez votre situation 2. Gisele analyse 3. Recevez votre plan d'action avec les démarches, modèles et délais
+  - Column 2: "La mise en relation" (finding a lawyer). Steps: 1. Consultez les profils 2. Filtrez par spécialité 3. Prenez rendez-vous en ligne
+
+PAGE 2 — /how-it-works — "Comment ça marche"
+- Detailed step-by-step explanation with visuals
+- Section 1: "Votre guide juridique (Gisele)" — explain the questionnaire flow. Emphasize: "Pas de conseil personnalisé, uniquement les démarches: qui saisir, quand et comment."
+- Section 2: "Trouver un avocat" — explain the matching and booking flow
+- Add a FAQ at the bottom:
+  - "Est-ce gratuit ?" → "L'analyse de votre situation est gratuite. La mise en relation avec un avocat est un service séparé."
+  - "Est-ce du conseil juridique ?" → "Non. Gisele vous informe sur les procédures existantes. Pour une stratégie de défense personnalisée, consultez un avocat."
+  - "Mes données sont-elles protégées ?" → "Oui, conformément au RGPD."
+
+PAGE 3 — /legal — "Mentions légales et CGU"
+- Standard French legal page template with sections:
+  - Mentions légales (placeholder company info)
+  - Conditions Générales d'Utilisation
+  - Politique de confidentialité (RGPD)
+  - Clause: "Ce service ne constitue pas de l'exercice de la profession d'avocat au sens de la loi du 31 décembre 1971."
+
+Add a navigation bar with links to: Accueil, Comment ça marche, Qui sommes-nous, Analyser ma situation (CTA button)
+Add footer with links to: Mentions légales, CGU, Contact
