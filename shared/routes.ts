@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertProcedureSchema, procedures, practitioners, dossiers } from './schema';
+import { insertProcedureSchema, procedures, practitioners, dossiers, type InsertDossier } from './schema';
 
 // ============================================
 // SHARED ERROR SCHEMAS
@@ -80,6 +80,15 @@ export const api = {
       path: '/api/dossiers',
       responses: {
         200: z.array(z.custom<typeof dossiers.$inferSelect>()),
+      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/dossiers',
+      input: z.custom<InsertDossier>(),
+      responses: {
+        201: z.custom<typeof dossiers.$inferSelect>(),
+        401: z.string(),
       },
     },
   },

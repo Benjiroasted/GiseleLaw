@@ -3,12 +3,15 @@ import {
   users,
   procedures,
   practitioners,
+  dossiers,
   type User,
   type InsertUser,
   type Procedure,
   type InsertProcedure,
   type UpdateProcedureRequest,
-  type Practitioner
+  type Practitioner,
+  type Dossier,
+  type InsertDossier
 } from "@shared/schema";
 import { eq, and, ilike, arrayContains, sql } from "drizzle-orm";
 
@@ -25,6 +28,7 @@ export interface IStorage {
   deleteProcedure(id: number): Promise<void>;
   listPractitioners(filters?: { specialty?: string; city?: string; acceptsLegalAid?: boolean }): Promise<Practitioner[]>;
   listDossiers(userId: string): Promise<Dossier[]>;
+  createDossier(dossier: InsertDossier): Promise<Dossier>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -89,6 +93,11 @@ export class DatabaseStorage implements IStorage {
 
   async listDossiers(userId: string): Promise<Dossier[]> {
     return await db.select().from(dossiers).where(eq(dossiers.userId, userId));
+  }
+
+  async createDossier(insertDossier: InsertDossier): Promise<Dossier> {
+    const [dossier] = await db.insert(dossiers).values(insertDossier).returning();
+    return dossier;
   }
 }
 

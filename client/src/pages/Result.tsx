@@ -1,17 +1,52 @@
-import { useRoute, Link } from "wouter";
+import { useRoute, Link, useLocation } from "wouter";
 import { useProcedure } from "@/hooks/use-procedures";
 import { Layout } from "@/components/Layout";
 import { TimelineStep } from "@/components/TimelineStep";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Printer, Briefcase, AlertTriangle, CalendarDays } from "lucide-react";
+import { Loader2, Printer, Briefcase, AlertTriangle, CalendarDays, Save } from "lucide-react";
 import { addDays, addYears, addMonths, format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useAuth } from "@/hooks/use-auth";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export default function Result() {
   const [, params] = useRoute("/procedure/:id/result");
+  const [, setLocation] = useLocation();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [isSaving, setIsSaving] = useState(false);
   const procedureId = parseInt(params!.id);
   const { data: procedure, isLoading } = useProcedure(procedureId);
+
+  const saveToDossiers = async () => {
+    if (!procedure) return;
+    setIsSaving(true);
+    try {
+      await apiRequest("POST", "/api/dossiers", {
+        title: procedure.title,
+        domain: procedure.type,
+        procedureData: procedure.answers,
+        status: 'active'
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/dossiers"] });
+      toast({
+        title: "Dossier sauvegardé",
+        description: "Votre dossier a été ajouté à votre compte.",
+      });
+      setLocation("/my-account");
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de sauvegarder le dossier.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -159,6 +194,34 @@ export default function Result() {
                       delay={idx * 150}
                     />
                   ))}
+                </div>
+
+                <div className="mt-8 pt-8 border-t">
+                  {user ? (
+                    <Button 
+                      className="w-full bg-primary hover:bg-primary/90" 
+                      onClick={saveToDossiers}
+                      disabled={isSaving}
+                    >
+                      {isSaving ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Save className="mr-2 h-4 w-4" />
+                      )}
+                      Sauvegarder dans mes dossiers
+                    </Button>
+                  ) : (
+                    <div className="bg-muted/50 p-6 rounded-lg text-center">
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Créez un compte gratuit pour sauvegarder votre dossier et suivre vos délais.
+                      </p>
+                      <Link href="/register">
+                        <Button variant="outline" className="w-full">
+                          Créer un compte
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

@@ -111,5 +111,17 @@ export async function registerRoutes(
     res.json(dossiers);
   });
 
+  app.post(api.dossiers.create.path, async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).send("Not authenticated");
+    }
+    const userId = (req.user as any).id;
+    const dossier = await storage.createDossier({
+      ...req.body,
+      userId
+    });
+    res.status(201).json(dossier);
+  });
+
   return httpServer;
 }
