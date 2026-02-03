@@ -101,5 +101,15 @@ export async function registerRoutes(
     res.json(practitioners);
   });
 
+  // === DOSSIERS API ===
+  app.get(api.dossiers.list.path, async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).send("Not authenticated");
+    }
+    const userId = (req.user as any).id;
+    const dossiers = await storage.listDossiers(userId);
+    res.json(dossiers);
+  });
+
   return httpServer;
 }

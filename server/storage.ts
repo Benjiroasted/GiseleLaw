@@ -24,6 +24,7 @@ export interface IStorage {
   listProcedures(userId: string): Promise<Procedure[]>;
   deleteProcedure(id: number): Promise<void>;
   listPractitioners(filters?: { specialty?: string; city?: string; acceptsLegalAid?: boolean }): Promise<Practitioner[]>;
+  listDossiers(userId: string): Promise<Dossier[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -84,6 +85,10 @@ export class DatabaseStorage implements IStorage {
     }
 
     return await query;
+  }
+
+  async listDossiers(userId: string): Promise<Dossier[]> {
+    return await db.select().from(dossiers).where(eq(dossiers.userId, userId));
   }
 }
 
