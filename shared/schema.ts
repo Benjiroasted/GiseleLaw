@@ -51,10 +51,30 @@ export const bookings = pgTable("bookings", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const dossiers = pgTable("dossiers", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id),
+  title: text("title"),
+  domain: text("domain"),
+  subdomain: text("subdomain"),
+  procedureData: jsonb("procedure_data").$type<Record<string, any>>(),
+  deadlines: jsonb("deadlines").$type<Record<string, any>>(),
+  status: text("status").default("active"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // === RELATIONS ===
 export const proceduresRelations = relations(procedures, ({ one }) => ({
   user: one(users, {
     fields: [procedures.userId],
+    references: [users.id],
+  }),
+}));
+
+export const dossiersRelations = relations(dossiers, ({ one }) => ({
+  user: one(users, {
+    fields: [dossiers.userId],
     references: [users.id],
   }),
 }));
@@ -76,6 +96,7 @@ export const bookingsRelations = relations(bookings, ({ one }) => ({
 
 export const usersRelations = relations(users, ({ many, one }) => ({
   procedures: many(procedures),
+  dossiers: many(dossiers),
   practitionerProfile: one(practitioners, {
     fields: [users.id],
     references: [practitioners.userId],
@@ -86,6 +107,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
 export const insertProcedureSchema = createInsertSchema(procedures).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertPractitionerSchema = createInsertSchema(practitioners).omit({ id: true, createdAt: true });
 export const insertBookingSchema = createInsertSchema(bookings).omit({ id: true, createdAt: true });
+export const insertDossierSchema = createInsertSchema(dossiers).omit({ id: true, createdAt: true, updatedAt: true });
 
 // === EXPLICIT API CONTRACT TYPES ===
 export type { User, UpsertUser as InsertUser } from "./models/auth";
@@ -98,6 +120,9 @@ export type InsertPractitioner = z.infer<typeof insertPractitionerSchema>;
 
 export type Booking = typeof bookings.$inferSelect;
 export type InsertBooking = z.infer<typeof insertBookingSchema>;
+
+export type Dossier = typeof dossiers.$inferSelect;
+export type InsertDossier = z.infer<typeof insertDossierSchema>;
 
 // Request types
 export type CreateProcedureRequest = InsertProcedure;
