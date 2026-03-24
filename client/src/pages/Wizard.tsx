@@ -86,6 +86,12 @@ const STEP_ID_TO_ANSWER_KEY: Record<string, string> = {
   dg_c2_deux_oui_dem: "dgDemandeRestitution",
   dg_c2_deux_non_dem: "dgDemandeRestitution",
   dg_c3_raison: "dgAbsenceRaison",
+  // Employment / licenciement mappings
+  emp_fin_contrat: "empFinContrat",
+  emp_situation: "empSituation",
+  emp_motif: "empMotif",
+  emp_type_faute: "empTypeFaute",
+  emp_procedure: "empProcedure",
 };
 
 function transformAnswerValue(stepId: string, value: string): unknown {
@@ -257,6 +263,8 @@ export default function Wizard() {
       type = "contrat_vente_non_paye";
     } else if (procedureAnswers.dgEtatDesLieux !== undefined) {
       type = "depot_garantie";
+    } else if (procedureAnswers.empTypeFaute !== undefined || procedureAnswers.empMotif === "insuffisance") {
+      type = "licenciement";
     }
     const payload = {
       title: `Procédure du ${new Date().toLocaleDateString("fr-FR")}`,

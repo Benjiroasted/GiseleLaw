@@ -277,6 +277,49 @@ const LABELS: Record<
       desaccord: "Pas d'accord entre les parties",
     },
   },
+  // Employment / licenciement
+  empFinContrat: {
+    label: "Fin du contrat",
+    valueLabels: {
+      licencie: "Licencié(e)",
+      rupture_conv: "Rupture conventionnelle",
+      demission: "Démission",
+      cdd_termine: "CDD terminé / rompu",
+      abandon_poste: "Abandon de poste (selon employeur)",
+    },
+  },
+  empSituation: {
+    label: "Situation actuelle",
+    valueLabels: {
+      convoque_entretien: "Convoqué(e) à un entretien préalable",
+      lettre_recue: "Lettre de licenciement reçue",
+      pas_de_lettre: "Pas de lettre de licenciement",
+    },
+  },
+  empMotif: {
+    label: "Motif du licenciement",
+    valueLabels: {
+      faute: "Licenciement pour faute",
+      insuffisance: "Insuffisance professionnelle",
+      economique: "Motifs économiques",
+    },
+  },
+  empTypeFaute: {
+    label: "Type de faute",
+    valueLabels: {
+      faute_simple: "Faute simple",
+      faute_grave: "Faute grave",
+      faute_lourde: "Faute lourde",
+    },
+  },
+  empProcedure: {
+    label: "Procédure respectée",
+    valueLabels: {
+      oui: "Oui",
+      non: "Non",
+      ne_sais_pas: "Ne sais pas",
+    },
+  },
 };
 
 const ORDER: string[] = [
@@ -312,6 +355,12 @@ const ORDER: string[] = [
   "dgContestation",
   "dgAbsenceRaison",
   "dgDemandeRestitution",
+  // Employment
+  "empFinContrat",
+  "empSituation",
+  "empMotif",
+  "empTypeFaute",
+  "empProcedure",
 ];
 
 function formatValue(key: string, rawValue: unknown): string {

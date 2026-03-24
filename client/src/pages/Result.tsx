@@ -14,6 +14,7 @@ import {
   getDepotGarantieFiche,
   type FicheContent,
 } from "@/data/ficheContent";
+import { getLicenciementFiche } from "@/data/emploiFiches";
 import type { ProcedureAnswers } from "@shared/schema";
 
 export default function Result() {
@@ -93,6 +94,10 @@ export default function Result() {
     if (ficheNum !== null) {
       fiche = getDepotGarantieFiche(ficheNum);
     }
+  }
+
+  if (procedure.type === "licenciement" && answers.empTypeFaute) {
+    fiche = getLicenciementFiche(answers.empTypeFaute as string);
   }
 
   // ── Render fiche if found ──

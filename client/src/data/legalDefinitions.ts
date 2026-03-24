@@ -15,6 +15,12 @@ export const LEGAL_DEFINITIONS: Record<string, string> = {
     "Être humain souhaitant défendre **ses propres intérêts**.",
   personne_morale:
     "Entité juridique (entreprise, professionnel, banque, assurance, administration) souhaitant défendre les **intérêts de cette entité**.",
+  faute_licenciement:
+    "Faute du salarié dans l'exercice de ses fonctions.",
+  insuffisance_pro:
+    "Incapacité du salarié à réaliser les tâches confiées / à atteindre les objectifs.",
+  motif_economique:
+    "Difficulté économique, réorganisation de l'entreprise…",
 };
 
 export type LegalDefinitionKey = keyof typeof LEGAL_DEFINITIONS;

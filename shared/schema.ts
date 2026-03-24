@@ -50,6 +50,12 @@ export interface ProcedureAnswers {
   dgMontantProportionne?: boolean;
   dgContestation?: "degradation" | "montant_reparations" | "les_deux";
   dgAbsenceRaison?: "proprio_absent" | "locataire_absent" | "desaccord";
+  // Employment / licenciement branch
+  empFinContrat?: "licencie" | "rupture_conv" | "demission" | "cdd_termine" | "abandon_poste";
+  empSituation?: "convoque_entretien" | "lettre_recue" | "pas_de_lettre";
+  empMotif?: "faute" | "insuffisance" | "economique";
+  empTypeFaute?: "faute_simple" | "faute_grave" | "faute_lourde";
+  empProcedure?: "oui" | "non" | "ne_sais_pas";
   // Achat/vente/service branch
   agreementType?: string;
   problemType?: string;

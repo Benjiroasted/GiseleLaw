@@ -585,7 +585,7 @@ export const WIZARD_STEPS: WizardStep[] = [
         sublabel: "licenciement, rupture conventionnelle, démission, fin de CDD…",
         value: "rupture_contrat",
         chipLabel: "Rupture contrat",
-        next: PLACEHOLDER_NEXT, // → Batch 3 : sous-arbre licenciement + fiches 87-88
+        next: "emp_fin_contrat",
       },
       {
         label: "Votre contrat de travail ou embauche",
@@ -1031,6 +1031,162 @@ export const WIZARD_STEPS: WizardStep[] = [
         value: "desaccord",
         chipLabel: "Désaccord",
         next: SUMMARY_STEP_ID, // → F45
+      },
+    ],
+  },
+
+  // ══════════════════════════════════════════════════════════════
+  //  BRANCHE : EMPLOI / LICENCIEMENT
+  //  Entrée : step_4_emploi → rupture_contrat → emp_fin_contrat
+  // ══════════════════════════════════════════════════════════════
+
+  // ──────────── Comment votre contrat a-t-il pris fin ? ────────────
+  {
+    id: "emp_fin_contrat",
+    question: "Comment votre contrat a-t-il pris fin ?",
+    options: [
+      {
+        label: "J'ai été licencié(e) ou je vais me faire licencier",
+        value: "licencie",
+        chipLabel: "Licencié(e)",
+        next: "emp_situation",
+      },
+      {
+        label: "J'ai signé une rupture conventionnelle",
+        value: "rupture_conv",
+        chipLabel: "Rupture conv.",
+        next: PLACEHOLDER_NEXT,
+      },
+      {
+        label: "J'ai démissionné",
+        value: "demission",
+        chipLabel: "Démission",
+        next: PLACEHOLDER_NEXT,
+      },
+      {
+        label: "Mon CDD s'est terminé ou a été rompu",
+        value: "cdd_termine",
+        chipLabel: "Fin de CDD",
+        next: PLACEHOLDER_NEXT,
+      },
+      {
+        label: "Mon employeur considère que j'ai abandonné mon poste",
+        value: "abandon_poste",
+        chipLabel: "Abandon de poste",
+        next: PLACEHOLDER_NEXT,
+      },
+    ],
+  },
+
+  // ──────────── Où en est la situation ? ────────────
+  {
+    id: "emp_situation",
+    question: "Où en est la situation ?",
+    options: [
+      {
+        label: "J'ai été convoqué(e) à un entretien préalable au licenciement",
+        value: "convoque_entretien",
+        chipLabel: "Convoqué entretien",
+        next: PLACEHOLDER_NEXT,
+      },
+      {
+        label: "J'ai reçu une lettre de licenciement",
+        value: "lettre_recue",
+        chipLabel: "Lettre reçue",
+        next: "emp_motif",
+      },
+      {
+        label: "Mon contrat a pris fin mais je n'ai pas reçu de lettre de licenciement",
+        value: "pas_de_lettre",
+        chipLabel: "Pas de lettre",
+        next: PLACEHOLDER_NEXT,
+      },
+    ],
+  },
+
+  // ──────────── Quel motif a été indiqué ? ────────────
+  {
+    id: "emp_motif",
+    question: "Quel motif a été indiqué lors du licenciement ?",
+    options: [
+      {
+        label: "Licenciement pour faute",
+        sublabel: "faute du salarié dans l'exercice de ses fonctions",
+        value: "faute",
+        chipLabel: "Faute",
+        tooltipKey: "faute_licenciement",
+        next: "emp_type_faute",
+      },
+      {
+        label: "Licenciement pour insuffisance professionnelle / résultats insuffisants",
+        sublabel: "incapacité du salarié à réaliser les tâches confiées / à atteindre les objectifs",
+        value: "insuffisance",
+        chipLabel: "Insuffisance",
+        tooltipKey: "insuffisance_pro",
+        next: "emp_procedure",
+      },
+      {
+        label: "Licenciement pour motifs économiques",
+        sublabel: "difficulté économique, réorganisation de l'entreprise…",
+        value: "economique",
+        chipLabel: "Motif éco",
+        tooltipKey: "motif_economique",
+        next: PLACEHOLDER_NEXT,
+      },
+    ],
+  },
+
+  // ──────────── Type de faute ────────────
+  {
+    id: "emp_type_faute",
+    question: "Quel type de faute est invoqué ?",
+    options: [
+      {
+        label: "Faute simple",
+        sublabel: "négligence ou erreur du salarié dans l'exercice de ses fonctions",
+        value: "faute_simple",
+        chipLabel: "Faute simple",
+        next: "emp_procedure",
+      },
+      {
+        label: "Faute grave",
+        sublabel: "manquement grave aux obligations du salarié (indiscipline, absences injustifiées, vol, harcèlement…)",
+        value: "faute_grave",
+        chipLabel: "Faute grave",
+        next: "emp_procedure",
+      },
+      {
+        label: "Faute lourde",
+        sublabel: "faute avec intention de nuire (dégradation, infractions, divulgation d'infos confidentielles…)",
+        value: "faute_lourde",
+        chipLabel: "Faute lourde",
+        next: "emp_procedure",
+      },
+    ],
+  },
+
+  // ──────────── Procédure respectée ? ────────────
+  {
+    id: "emp_procedure",
+    question: "La procédure a-t-elle été respectée ? (entretien préalable, notification, préavis, remise de document…)",
+    options: [
+      {
+        label: "Oui",
+        value: "oui",
+        chipLabel: "Procédure: oui",
+        next: SUMMARY_STEP_ID, // → F87 or F88 based on fault type
+      },
+      {
+        label: "Non",
+        value: "non",
+        chipLabel: "Procédure: non",
+        next: PLACEHOLDER_NEXT,
+      },
+      {
+        label: "Je ne sais pas",
+        value: "ne_sais_pas",
+        chipLabel: "Procédure: ?",
+        next: PLACEHOLDER_NEXT,
       },
     ],
   },
