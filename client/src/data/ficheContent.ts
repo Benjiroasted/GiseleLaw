@@ -420,58 +420,7 @@ export function getDepotGarantieFicheNumber(a: DGAnswers): number | null {
 }
 
 /**
- * Generates a placeholder fiche for a given depot garantie fiche number.
- * In Batch 2b/2c, these will be replaced with real content from the PDF.
- */
-function makeDGPlaceholderFiche(ficheNum: number): FicheContent {
-  // Info-only fiches (délai pas dépassé)
-  const INFO_FICHES = [28, 33, 38];
-  const isInfo = INFO_FICHES.includes(ficheNum);
-
-  return {
-    header: isInfo
-      ? `Information — Fiche ${ficheNum}`
-      : `Absence de restitution du dépôt de garantie — Fiche ${ficheNum}`,
-    intro: isInfo
-      ? "Le délai légal de restitution du dépôt de garantie n'est pas encore dépassé. Conservez ce dossier et revenez si le propriétaire ne restitue pas le dépôt dans le délai imparti."
-      : `Au vu des éléments transmis, le problème concerne l'absence de restitution du dépôt de garantie (caution) par le propriétaire. Le contenu détaillé de cette fiche sera bientôt disponible.`,
-    cadreLegal: {
-      paragraphs: [
-        "Le propriétaire doit restituer le dépôt de garantie dans un délai de **1 mois** (état des lieux conforme) ou **2 mois** (dégradations mentionnées) après la remise des clés.",
-        "En cas de retenue, celle-ci doit être justifiée par des éléments factuels (état des lieux, devis, factures).",
-        "Majoration de 10% du loyer mensuel hors charges, par mois entamé de retard.",
-      ],
-      reference: "Article 22 de la loi n° 89-462 du 6 juillet 1989 tendant à améliorer les rapports locatifs",
-    },
-    ctaPractitionersHref: "/practitioners?specialty=Droit%20immobilier",
-    steps: isInfo
-      ? []
-      : [
-          {
-            title: "Étapes de résolution",
-            blocks: [
-              {
-                paragraphs: [
-                  "Le contenu complet de cette fiche (étapes de résolution, conciliation, injonction de payer, action devant le juge) sera disponible prochainement.",
-                  "En attendant, vous pouvez consulter un avocat spécialisé en droit immobilier.",
-                ],
-              },
-            ],
-          },
-        ],
-  };
-}
-
-// Cache for DG placeholder fiches
-const DG_FICHE_CACHE = new Map<number, FicheContent>();
-
-/**
  * Get a depot garantie fiche by number (5-45).
- * Returns placeholder content for now; will be replaced with real content in Batch 2b/2c.
+ * Uses real content from dgFiches.ts.
  */
-export function getDepotGarantieFiche(ficheNum: number): FicheContent {
-  if (!DG_FICHE_CACHE.has(ficheNum)) {
-    DG_FICHE_CACHE.set(ficheNum, makeDGPlaceholderFiche(ficheNum));
-  }
-  return DG_FICHE_CACHE.get(ficheNum)!;
-}
+export { getDGFiche as getDepotGarantieFiche } from "./dgFiches";
