@@ -106,9 +106,9 @@ export const WIZARD_STEPS: WizardStep[] = [
     question:
       "Votre situation concerne-t-elle une infraction ? (violence, escroquerie, harcèlement, contravention…)",
     options: [
-      { label: "OUI", value: "oui", next: "step_3b" },
-      { label: "NON", value: "non", next: "step_3_opponent" },
-      { label: "JE NE SAIS PAS", value: "je_ne_sais_pas", chipLabel: "Ne sais pas", next: "step_3c" },
+      { label: "Oui", value: "oui", next: "step_3b" },
+      { label: "Non", value: "non", next: "step_3_opponent" },
+      { label: "Je ne sais pas", value: "je_ne_sais_pas", chipLabel: "Ne sais pas", next: "step_3c" },
     ],
   },
 
@@ -192,8 +192,8 @@ export const WIZARD_STEPS: WizardStep[] = [
     question:
       "Avez-vous déjà reçu un document officiel concernant votre problème ? (convocation, mise en demeure, courrier d'avocat, décision de justice…)",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Doc: oui", next: "step_doc_type" },
-      { label: "NON", value: "non", chipLabel: "Doc: non", next: "step_4" },
+      { label: "Oui", value: "oui", chipLabel: "Doc: oui", next: "step_doc_type" },
+      { label: "Non", value: "non", chipLabel: "Doc: non", next: "step_4" },
     ],
   },
 
@@ -203,8 +203,8 @@ export const WIZARD_STEPS: WizardStep[] = [
     question:
       "Avez-vous déjà reçu un document officiel concernant votre problème ? (convocation, mise en demeure, courrier d'avocat, décision de justice…)",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Doc: oui", next: "step_doc_type" },
-      { label: "NON", value: "non", chipLabel: "Doc: non", next: "step_4_emploi" },
+      { label: "Oui", value: "oui", chipLabel: "Doc: oui", next: "step_doc_type" },
+      { label: "Non", value: "non", chipLabel: "Doc: non", next: "step_4_emploi" },
     ],
   },
 
@@ -451,8 +451,8 @@ export const WIZARD_STEPS: WizardStep[] = [
     question:
       "Avez-vous envoyé une relance de paiement par écrit (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "MED: oui", next: "step_9" },
-      { label: "NON", value: "non", chipLabel: "MED: non", next: "step_9" },
+      { label: "Oui", value: "oui", chipLabel: "MED: oui", next: "step_9" },
+      { label: "Non", value: "non", chipLabel: "MED: non", next: "step_9" },
     ],
   },
 
@@ -670,8 +670,8 @@ export const WIZARD_STEPS: WizardStep[] = [
     id: "dg_c1_degradations",
     question: "L'état des lieux de sortie mentionne-t-il des dégradations par rapport à l'état des lieux d'entrée ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Dégradations oui", next: "dg_c1_d_delai" },
-      { label: "NON", sublabel: "L'état des lieux est conforme", value: "non", chipLabel: "EDL conforme", next: "dg_c1_c_delai" },
+      { label: "Oui", value: "oui", chipLabel: "Dégradations oui", next: "dg_c1_d_delai" },
+      { label: "Non", sublabel: "L'état des lieux est conforme", value: "non", chipLabel: "EDL conforme", next: "dg_c1_c_delai" },
     ],
   },
 
@@ -737,8 +737,8 @@ export const WIZARD_STEPS: WizardStep[] = [
     id: "dg_c1_d_deg_justif",
     question: "Le propriétaire a-t-il fourni des justifications (facture, devis…) ?",
     options: [
-      { label: "OUI", value: "oui", next: "dg_c1_d_deg_conteste" },
-      { label: "NON", value: "non", next: "dg_c1_d_deg_nojust_dem" },
+      { label: "Oui", value: "oui", next: "dg_c1_d_deg_conteste" },
+      { label: "Non", value: "non", next: "dg_c1_d_deg_nojust_dem" },
     ],
   },
   {
@@ -746,24 +746,24 @@ export const WIZARD_STEPS: WizardStep[] = [
     question: "Contestez-vous ces justifications ?",
     helpText: "Si non, la retenue est considérée comme justifiée.",
     options: [
-      { label: "OUI", value: "oui", next: "dg_c1_d_deg_cont_dem" },
-      { label: "NON", value: "non", next: SUMMARY_STEP_ID }, // → F5
+      { label: "Oui", value: "oui", next: "dg_c1_d_deg_cont_dem" },
+      { label: "Non", value: "non", next: SUMMARY_STEP_ID }, // → F5
     ],
   },
   {
     id: "dg_c1_d_deg_cont_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F6
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F7
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F6
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F7
     ],
   },
   {
     id: "dg_c1_d_deg_nojust_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F8
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F9
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F8
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F9
     ],
   },
 
@@ -773,8 +773,8 @@ export const WIZARD_STEPS: WizardStep[] = [
     id: "dg_c1_d_loy_impayes",
     question: "Des loyers ou charges restaient-ils impayés au moment de votre départ ?",
     options: [
-      { label: "OUI", value: "oui", next: "dg_c1_d_loy_montant" },
-      { label: "NON", value: "non", next: "dg_c1_d_loy_non_dem" },
+      { label: "Oui", value: "oui", next: "dg_c1_d_loy_montant" },
+      { label: "Non", value: "non", next: "dg_c1_d_loy_non_dem" },
     ],
   },
   {
@@ -782,24 +782,24 @@ export const WIZARD_STEPS: WizardStep[] = [
     question: "Le montant retenu par le propriétaire est-il proportionné aux loyers ou charges impayés ?",
     helpText: "Le propriétaire retient-il plus que ce qui lui est dû ?",
     options: [
-      { label: "OUI (proportionné)", value: "oui", chipLabel: "Proportionné", next: SUMMARY_STEP_ID }, // → F14
-      { label: "NON (il retient plus que ce qui est dû)", value: "non", chipLabel: "Disproportionné", next: "dg_c1_d_loy_disp_dem" },
+      { label: "Oui (proportionné)", value: "oui", chipLabel: "Proportionné", next: SUMMARY_STEP_ID }, // → F14
+      { label: "Non (il retient plus que ce qui est dû)", value: "non", chipLabel: "Disproportionné", next: "dg_c1_d_loy_disp_dem" },
     ],
   },
   {
     id: "dg_c1_d_loy_disp_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F15
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F16
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F15
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F16
     ],
   },
   {
     id: "dg_c1_d_loy_non_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F17
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F18
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F17
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F18
     ],
   },
 
@@ -809,8 +809,8 @@ export const WIZARD_STEPS: WizardStep[] = [
     id: "dg_c1_d_auc_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F24
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F25
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F24
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F25
     ],
   },
 
@@ -820,24 +820,24 @@ export const WIZARD_STEPS: WizardStep[] = [
     id: "dg_c1_c_deg_justif",
     question: "Le propriétaire a-t-il fourni des justifications (facture, devis…) ?",
     options: [
-      { label: "OUI", value: "oui", next: "dg_c1_c_deg_oui_dem" },
-      { label: "NON", value: "non", next: "dg_c1_c_deg_non_dem" },
+      { label: "Oui", value: "oui", next: "dg_c1_c_deg_oui_dem" },
+      { label: "Non", value: "non", next: "dg_c1_c_deg_non_dem" },
     ],
   },
   {
     id: "dg_c1_c_deg_oui_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F10
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F11
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F10
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F11
     ],
   },
   {
     id: "dg_c1_c_deg_non_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F12
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F13
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F12
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F13
     ],
   },
 
@@ -847,32 +847,32 @@ export const WIZARD_STEPS: WizardStep[] = [
     id: "dg_c1_c_loy_impayes",
     question: "Des loyers ou charges restaient-ils impayés au moment de votre départ ?",
     options: [
-      { label: "OUI", value: "oui", next: "dg_c1_c_loy_montant" },
-      { label: "NON", value: "non", next: "dg_c1_c_loy_non_dem" },
+      { label: "Oui", value: "oui", next: "dg_c1_c_loy_montant" },
+      { label: "Non", value: "non", next: "dg_c1_c_loy_non_dem" },
     ],
   },
   {
     id: "dg_c1_c_loy_montant",
     question: "Le montant retenu par le propriétaire est-il proportionné aux loyers ou charges impayés ?",
     options: [
-      { label: "OUI (proportionné)", value: "oui", chipLabel: "Proportionné", next: SUMMARY_STEP_ID }, // → F19
-      { label: "NON (il retient plus que ce qui est dû)", value: "non", chipLabel: "Disproportionné", next: "dg_c1_c_loy_disp_dem" },
+      { label: "Oui (proportionné)", value: "oui", chipLabel: "Proportionné", next: SUMMARY_STEP_ID }, // → F19
+      { label: "Non (il retient plus que ce qui est dû)", value: "non", chipLabel: "Disproportionné", next: "dg_c1_c_loy_disp_dem" },
     ],
   },
   {
     id: "dg_c1_c_loy_disp_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F20
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F21
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F20
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F21
     ],
   },
   {
     id: "dg_c1_c_loy_non_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F22
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F23
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F22
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F23
     ],
   },
 
@@ -882,8 +882,8 @@ export const WIZARD_STEPS: WizardStep[] = [
     id: "dg_c1_c_auc_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F26
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F27
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F26
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F27
     ],
   },
 
@@ -915,24 +915,24 @@ export const WIZARD_STEPS: WizardStep[] = [
     id: "dg_c2_deg_justif",
     question: "Le propriétaire a-t-il fourni des justifications (facture, devis…) ?",
     options: [
-      { label: "OUI", value: "oui", next: "dg_c2_deg_oui_dem" },
-      { label: "NON", value: "non", next: "dg_c2_deg_non_dem" },
+      { label: "Oui", value: "oui", next: "dg_c2_deg_oui_dem" },
+      { label: "Non", value: "non", next: "dg_c2_deg_non_dem" },
     ],
   },
   {
     id: "dg_c2_deg_oui_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F29
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F30
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F29
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F30
     ],
   },
   {
     id: "dg_c2_deg_non_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F31
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F32
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F31
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F32
     ],
   },
 
@@ -950,24 +950,24 @@ export const WIZARD_STEPS: WizardStep[] = [
     id: "dg_c2_mont_justif",
     question: "Le propriétaire a-t-il fourni des justifications (facture, devis…) ?",
     options: [
-      { label: "OUI", value: "oui", next: "dg_c2_mont_oui_dem" },
-      { label: "NON", value: "non", next: "dg_c2_mont_non_dem" },
+      { label: "Oui", value: "oui", next: "dg_c2_mont_oui_dem" },
+      { label: "Non", value: "non", next: "dg_c2_mont_non_dem" },
     ],
   },
   {
     id: "dg_c2_mont_oui_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F34
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F35
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F34
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F35
     ],
   },
   {
     id: "dg_c2_mont_non_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F36
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F37
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F36
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F37
     ],
   },
 
@@ -985,24 +985,24 @@ export const WIZARD_STEPS: WizardStep[] = [
     id: "dg_c2_deux_justif",
     question: "Le propriétaire a-t-il fourni des justifications (facture, devis…) ?",
     options: [
-      { label: "OUI", value: "oui", next: "dg_c2_deux_oui_dem" },
-      { label: "NON", value: "non", next: "dg_c2_deux_non_dem" },
+      { label: "Oui", value: "oui", next: "dg_c2_deux_oui_dem" },
+      { label: "Non", value: "non", next: "dg_c2_deux_non_dem" },
     ],
   },
   {
     id: "dg_c2_deux_oui_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F39
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F40
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F39
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F40
     ],
   },
   {
     id: "dg_c2_deux_non_dem",
     question: "Une demande de restitution du dépôt a-t-elle été faite (mise en demeure amiable) ?",
     options: [
-      { label: "OUI", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F41
-      { label: "NON", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F42
+      { label: "Oui", value: "oui", chipLabel: "Demande: oui", next: SUMMARY_STEP_ID }, // → F41
+      { label: "Non", value: "non", chipLabel: "Demande: non", next: SUMMARY_STEP_ID }, // → F42
     ],
   },
 
@@ -1191,6 +1191,77 @@ export const WIZARD_STEPS: WizardStep[] = [
     ],
   },
 ];
+
+// ═══════════════════════════════════════════════════════════════
+//  BREADCRUMB SECTIONS
+// ═══════════════════════════════════════════════════════════════
+
+export interface BreadcrumbSection {
+  id: string;
+  label: string;
+}
+
+export const BREADCRUMB_SECTIONS: BreadcrumbSection[] = [
+  { id: "profil", label: "Profil" },
+  { id: "situation", label: "Situation" },
+  { id: "categorie", label: "Catégorie" },
+  { id: "details", label: "Détails" },
+  { id: "recap", label: "Récapitulatif" },
+];
+
+const STEP_TO_SECTION: Record<string, string> = {
+  // Profil
+  step_1: "profil", step_1b: "profil", step_2: "profil",
+  // Situation
+  step_3: "situation", step_3b: "situation", step_3c: "situation",
+  step_3_opponent: "situation", step_doc: "situation", step_doc_emp: "situation",
+  step_doc_type: "situation",
+  // Catégorie
+  step_4: "categorie", step_4_immo: "categorie", step_4_immo_role: "categorie",
+  step_4_loc: "categorie", step_4_prop: "categorie", step_4_emploi: "categorie",
+  step_5: "categorie",
+  // Détails (everything else before recap)
+  step_6: "details", step_6a: "details", step_6b: "details", step_6c: "details",
+  step_7: "details", step_8: "details",
+  // Depot garantie details
+  dg_edl: "details", dg_c1_degradations: "details", dg_c1_d_delai: "details",
+  dg_c1_c_delai: "details", dg_info_2mois: "details", dg_info_1mois: "details",
+  dg_c1_d_raison: "details", dg_c1_c_raison: "details",
+  dg_c1_d_deg_justif: "details", dg_c1_d_deg_conteste: "details",
+  dg_c1_d_deg_cont_dem: "details", dg_c1_d_deg_nojust_dem: "details",
+  dg_c1_d_loy_impayes: "details", dg_c1_d_loy_montant: "details",
+  dg_c1_d_loy_disp_dem: "details", dg_c1_d_loy_non_dem: "details",
+  dg_c1_d_auc_dem: "details",
+  dg_c1_c_deg_justif: "details", dg_c1_c_deg_oui_dem: "details",
+  dg_c1_c_deg_non_dem: "details", dg_c1_c_loy_impayes: "details",
+  dg_c1_c_loy_montant: "details", dg_c1_c_loy_disp_dem: "details",
+  dg_c1_c_loy_non_dem: "details", dg_c1_c_auc_dem: "details",
+  dg_c2_contestation: "details", dg_c2_deg_delai: "details",
+  dg_c2_deg_justif: "details", dg_c2_deg_oui_dem: "details",
+  dg_c2_deg_non_dem: "details", dg_c2_mont_delai: "details",
+  dg_c2_mont_justif: "details", dg_c2_mont_oui_dem: "details",
+  dg_c2_mont_non_dem: "details", dg_c2_deux_delai: "details",
+  dg_c2_deux_justif: "details", dg_c2_deux_oui_dem: "details",
+  dg_c2_deux_non_dem: "details", dg_c3_raison: "details",
+  // Employment details
+  emp_fin_contrat: "details", emp_situation: "details", emp_motif: "details",
+  emp_type_faute: "details", emp_procedure: "details",
+  // Recap
+  step_9: "recap",
+};
+
+export function getSectionForStep(stepId: string): string {
+  return STEP_TO_SECTION[stepId] ?? "details";
+}
+
+export function getCompletedSections(answeredStepIds: string[]): Set<string> {
+  const sections = new Set<string>();
+  for (const id of answeredStepIds) {
+    const s = STEP_TO_SECTION[id];
+    if (s) sections.add(s);
+  }
+  return sections;
+}
 
 // ═══════════════════════════════════════════════════════════════
 //  LOOKUP HELPERS

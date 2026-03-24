@@ -3,9 +3,9 @@ import { useEffect } from "react";
 import {
   ArrowRight,
   Scale,
-  ShieldCheck,
-  Clock,
-  FileText,
+  Search,
+  Route,
+  Users,
   MessageCircleQuestion,
   ListChecks,
   FileSearch,
@@ -56,7 +56,7 @@ export default function Home() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
               </span>
-              Votre guide juridique intelligent
+              Le droit accessible à tous
             </div>
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold font-serif text-primary tracking-tight mb-6">
@@ -67,9 +67,9 @@ export default function Home() {
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Gisèle vous accompagne pas à pas pour comprendre vos droits,
-              calculer vos délais et préparer vos dossiers. Simple, rapide, et
-              accessible.
+              Gisèle analyse votre situation juridique, vous présente les actions
+              possibles et vous guide pas à pas. Avant d'avoir besoin d'un
+              avocat, vous pouvez déjà agir — simplement et gratuitement.
             </p>
           </motion.div>
 
@@ -84,7 +84,7 @@ export default function Home() {
                 size="lg"
                 className="h-14 px-8 text-lg rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:-translate-y-0.5 transition-all bg-primary hover:bg-primary/90 text-white"
               >
-                Démarrer une procédure
+                Analyser ma situation
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
@@ -99,7 +99,7 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* Features Grid */}
+        {/* Features Grid — repositioned value proposition */}
         <motion.div
           variants={container}
           initial="hidden"
@@ -109,54 +109,55 @@ export default function Home() {
         >
           <motion.div
             variants={item}
-            className="bg-white p-8 rounded-2xl shadow-sm border border-border/50 hover:shadow-md transition-shadow"
+            className="bg-card p-8 rounded-2xl shadow-sm border border-border/50 hover:shadow-md transition-shadow"
           >
-            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-6">
-              <ShieldCheck className="h-6 w-6 text-primary" />
+            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
+              <Search className="h-6 w-6 text-primary" />
             </div>
             <h3 className="text-xl font-semibold font-serif mb-3 text-primary">
-              Droits clairs
+              Analysez votre problème
             </h3>
             <p className="text-muted-foreground">
-              Comprenez immédiatement si votre situation justifie une action en
-              justice grâce à notre questionnaire intelligent.
+              Répondez à quelques questions simples. Gisèle identifie votre
+              situation juridique et vous dit si une action est possible.
             </p>
           </motion.div>
 
           <motion.div
             variants={item}
-            className="bg-white p-8 rounded-2xl shadow-sm border border-border/50 hover:shadow-md transition-shadow"
+            className="bg-card p-8 rounded-2xl shadow-sm border border-border/50 hover:shadow-md transition-shadow"
           >
-            <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center mb-6">
-              <Clock className="h-6 w-6 text-accent" />
+            <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mb-6">
+              <Route className="h-6 w-6 text-accent" />
             </div>
             <h3 className="text-xl font-semibold font-serif mb-3 text-primary">
-              Délais calculés
+              Découvrez vos options
             </h3>
             <p className="text-muted-foreground">
-              Ne manquez jamais une date limite. Nous calculons automatiquement
-              les délais de prescription et de procédure.
+              Qui saisir, quand et comment : obtenez une feuille de route claire
+              avec les démarches gratuites à tenter avant de faire appel à un
+              professionnel.
             </p>
           </motion.div>
 
           <motion.div
             variants={item}
-            className="bg-white p-8 rounded-2xl shadow-sm border border-border/50 hover:shadow-md transition-shadow"
+            className="bg-card p-8 rounded-2xl shadow-sm border border-border/50 hover:shadow-md transition-shadow"
           >
-            <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center mb-6">
-              <FileText className="h-6 w-6 text-slate-600" />
+            <div className="w-12 h-12 bg-muted rounded-xl flex items-center justify-center mb-6">
+              <Users className="h-6 w-6 text-muted-foreground" />
             </div>
             <h3 className="text-xl font-semibold font-serif mb-3 text-primary">
-              Dossier prêt
+              Agissez ou faites-vous accompagner
             </h3>
             <p className="text-muted-foreground">
-              Obtenez une feuille de route détaillée et les modèles de documents
-              nécessaires pour avancer sereinement.
+              Suivez les étapes vous-même ou trouvez un avocat spécialisé.
+              La plupart des premières démarches sont simples et gratuites.
             </p>
           </motion.div>
         </motion.div>
 
-        {/* Comment ça marche Section */}
+        {/* Comment ça marche Section — with boxed steps */}
         <div id="comment-ca-marche" className="mt-24 scroll-mt-24">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -169,8 +170,8 @@ export default function Home() {
               Comment ça marche ?
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              Trois étapes simples pour comprendre vos droits et savoir comment
-              agir.
+              Trois étapes simples pour comprendre votre situation et savoir
+              comment agir.
             </p>
           </motion.div>
 
@@ -180,18 +181,18 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="text-center"
+              className="bg-card p-8 rounded-2xl shadow-sm border border-border/50 text-center"
             >
               <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
                 <MessageCircleQuestion className="h-8 w-8 text-primary" />
               </div>
               <div className="text-sm font-bold text-accent mb-2">Étape 1</div>
               <h3 className="text-lg font-semibold font-serif text-primary mb-2">
-                Répondez au questionnaire
+                Décrivez votre situation
               </h3>
               <p className="text-sm text-muted-foreground">
-                Décrivez votre situation en quelques clics. Nos questions
-                s'adaptent à votre cas.
+                Répondez à un questionnaire adapté à votre cas. Les questions
+                s'ajustent en fonction de vos réponses.
               </p>
             </motion.div>
 
@@ -200,18 +201,18 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="text-center"
+              className="bg-card p-8 rounded-2xl shadow-sm border border-border/50 text-center"
             >
               <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
                 <ListChecks className="h-8 w-8 text-primary" />
               </div>
               <div className="text-sm font-bold text-accent mb-2">Étape 2</div>
               <h3 className="text-lg font-semibold font-serif text-primary mb-2">
-                Recevez votre fiche juridique
+                Recevez votre feuille de route
               </h3>
               <p className="text-sm text-muted-foreground">
-                Obtenez une feuille de route personnalisée avec les étapes, les
-                délais et les textes de loi applicables.
+                Gisèle vous indique les démarches possibles, les délais
+                applicables et les textes de loi. Qui saisir, quand et comment.
               </p>
             </motion.div>
 
@@ -220,7 +221,7 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="text-center"
+              className="bg-card p-8 rounded-2xl shadow-sm border border-border/50 text-center"
             >
               <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
                 <FileSearch className="h-8 w-8 text-primary" />
@@ -230,23 +231,44 @@ export default function Home() {
                 Agissez ou trouvez un avocat
               </h3>
               <p className="text-sm text-muted-foreground">
-                Suivez les étapes vous-même ou connectez-vous avec un
-                professionnel spécialisé.
+                Suivez les étapes vous-même — la plupart sont gratuites — ou
+                connectez-vous avec un professionnel spécialisé.
               </p>
             </motion.div>
           </div>
+
+          {/* CTA after "Comment ça marche" */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="text-center mt-12"
+          >
+            <Link href="/procedure/new/wizard">
+              <Button
+                size="lg"
+                className="h-14 px-8 text-lg rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:-translate-y-0.5 transition-all bg-primary hover:bg-primary/90 text-white"
+              >
+                Commencer ma procédure
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </motion.div>
         </div>
 
-        {/* Trust/Disclaimer Section */}
+        {/* Trust/Disclaimer Section — updated messaging */}
         <div className="mt-24 bg-primary/5 rounded-3xl p-8 md:p-12 text-center">
           <Scale className="h-12 w-12 text-primary mx-auto mb-6 opacity-20" />
           <h2 className="text-2xl font-serif font-bold text-primary mb-4">
-            Une aide à la décision
+            Information juridique, pas conseil personnalisé
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Gisèle ne remplace pas un avocat. Notre mission est de démocratiser
-            l'accès à l'information juridique pour vous permettre de prendre les
-            bonnes décisions au bon moment.
+          <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Gisèle vous aide à comprendre qui saisir, quand et comment. Ce
+            n'est pas du conseil personnalisé sur la stratégie de votre dossier
+            — pour cela, un avocat reste indispensable. Notre mission : rendre
+            le droit accessible pour que chacun puisse agir en connaissance de
+            cause.
           </p>
         </div>
       </div>

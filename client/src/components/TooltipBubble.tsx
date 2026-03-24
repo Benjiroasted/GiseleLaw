@@ -1,16 +1,13 @@
 import * as React from "react";
+import { useState, useRef } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { HelpCircle } from "lucide-react";
 import { LEGAL_DEFINITIONS, type LegalDefinitionKey } from "@/data/legalDefinitions";
 import { cn } from "@/lib/utils";
 
-/**
- * Renders a term with a small circled (?) icon. On click/tap, opens a popover with the legal definition.
- */
 function renderDefinitionText(text: string): React.ReactNode {
   const parts = text.split(/\*\*(.*?)\*\*/g);
   return parts.map((part, i) =>
@@ -19,68 +16,80 @@ function renderDefinitionText(text: string): React.ReactNode {
 }
 
 export interface TooltipBubbleProps {
-  /** Key into LEGAL_DEFINITIONS */
   definitionKey: LegalDefinitionKey;
-  /** Optional class for the wrapper span */
   className?: string;
-  /** Render as superscript (exponent) next to a term */
   superscript?: boolean;
 }
 
 export function TooltipBubble({ definitionKey, className, superscript }: TooltipBubbleProps) {
   const definition = LEGAL_DEFINITIONS[definitionKey];
+  const [pinned, setPinned] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const leaveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   if (!definition) return null;
+
+  const isOpen = pinned || hovered;
+
+  const handleMouseEnter = () => {
+    if (leaveTimeout.current) {
+      clearTimeout(leaveTimeout.current);
+      leaveTimeout.current = null;
+    }
+    setHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    leaveTimeout.current = setTimeout(() => {
+      setHovered(false);
+    }, 150);
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setPinned((prev) => !prev);
+  };
 
   return (
     <span
-      onClick={(e) => {
-        // Stop event propagation so clicking the tooltip doesn't trigger parent button
-        e.stopPropagation();
-        e.preventDefault();
-      }}
-      onMouseDown={(e) => {
-        // Also stop on mousedown to prevent button activation
-        e.stopPropagation();
-      }}
-      className={cn("inline-block", superscript && "align-super")}
+      onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
+      onMouseDown={(e) => { e.stopPropagation(); }}
+      className={cn("inline-block", superscript && "align-middle ml-1.5")}
     >
-      <Popover>
+      <Popover open={isOpen} onOpenChange={(open) => { if (!open) setPinned(false); }}>
         <PopoverTrigger asChild>
           <span
             role="button"
             tabIndex={0}
             className={cn(
-              "inline-flex items-center justify-center rounded-full border border-muted-foreground/50 bg-muted/50 text-muted-foreground font-medium cursor-help hover:bg-muted hover:border-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 align-middle ml-0.5",
-              superscript ? "w-3 h-3 -translate-y-1" : "w-4 h-4",
+              "inline-flex items-center justify-center rounded-md bg-primary/10 text-primary font-semibold cursor-pointer hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 transition-colors select-none",
+              superscript ? "w-5 h-5 text-xs" : "w-6 h-6 text-sm",
               className
             )}
-            onClick={(e) => {
-              // Stop event propagation so clicking the tooltip doesn't trigger parent button
-              e.stopPropagation();
-            }}
-            onMouseDown={(e) => {
-              // Also stop on mousedown to prevent button activation
-              e.stopPropagation();
-            }}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onClick={handleClick}
+            onMouseDown={(e) => { e.stopPropagation(); }}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 e.stopPropagation();
-                (e.currentTarget as HTMLElement).click();
+                setPinned((prev) => !prev);
               }
             }}
           >
-            <HelpCircle className={cn(superscript ? "w-2 h-2" : "w-2.5 h-2.5")} />
+            ?
           </span>
         </PopoverTrigger>
         <PopoverContent
           className="max-w-sm text-sm text-popover-foreground"
           side="top"
           align="start"
-          onClick={(e) => {
-            // Stop event propagation on popover content too
-            e.stopPropagation();
-          }}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onClick={(e) => { e.stopPropagation(); }}
+          onOpenAutoFocus={(e) => { e.preventDefault(); }}
         >
           <p className="leading-relaxed">{renderDefinitionText(definition)}</p>
         </PopoverContent>

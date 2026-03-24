@@ -1,7 +1,28 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Loader2, Save, ChevronLeft } from "lucide-react";
+import { Loader2, CheckCircle, ChevronLeft, Pencil } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { ProcedureAnswers } from "@shared/schema";
+
+/** Maps step IDs to ProcedureAnswers field names (for click-to-edit) */
+const STEP_ID_TO_DISPLAY_KEY: Record<string, string> = {
+  step_1: "callerType", step_1b: "moraleSubType", step_2: "context",
+  step_3: "isCriminal", step_3b: "criminalSituation", step_3c: "criminalClarification",
+  step_3_opponent: "opponentType", step_doc: "documentOfficiel", step_doc_emp: "documentOfficiel",
+  step_4: "disputeCategory", step_4_immo: "immoCategory", step_4_immo_role: "immoRole",
+  step_4_loc: "locataireProbleme", step_4_prop: "proprietaireProbleme",
+  step_4_emploi: "emploiCategory", step_5: "agreementType",
+  step_6: "problemType", step_6a: "problemDetail", step_6b: "problemDetail",
+  step_6c: "problemDetail", step_7: "amount", step_8: "miseEnDemeure",
+  dg_edl: "dgEtatDesLieux", dg_c1_degradations: "dgDegradations",
+  dg_c1_d_delai: "dgDelaiCles", dg_c1_c_delai: "dgDelaiCles",
+  dg_c1_d_raison: "dgRaisonProprio", dg_c1_c_raison: "dgRaisonProprio",
+  dg_c1_d_deg_justif: "dgJustifications", dg_c1_c_deg_justif: "dgJustifications",
+  dg_c1_d_deg_conteste: "dgContesteJustif",
+  dg_c2_contestation: "dgContestation", dg_c3_raison: "dgAbsenceRaison",
+  emp_fin_contrat: "empFinContrat", emp_situation: "empSituation",
+  emp_motif: "empMotif", emp_type_faute: "empTypeFaute", emp_procedure: "empProcedure",
+};
 
 /**
  * Human-readable French labels for every possible answer value.
@@ -373,15 +394,19 @@ function formatValue(key: string, rawValue: unknown): string {
 
 export interface WizardSummaryProps {
   answers: ProcedureAnswers;
+  rawAnswers?: Array<{ stepId: string; selectedValue: string; chipLabel: string }>;
   onValidate: () => void;
   onModify: () => void;
+  onBackToStep?: (stepId: string) => void;
   isSubmitting?: boolean;
 }
 
 export function WizardSummary({
   answers,
+  rawAnswers,
   onValidate,
   onModify,
+  onBackToStep,
   isSubmitting = false,
 }: WizardSummaryProps) {
   const entries = ORDER.filter(
@@ -409,16 +434,37 @@ export function WizardSummary({
         </p>
       </div>
 
-      <ul className="space-y-3 text-sm">
-        {entries.map(({ key, label, value }) => (
-          <li
-            key={key}
-            className="flex justify-between gap-4 py-2 border-b border-border/60 last:border-0"
-          >
-            <span className="text-muted-foreground shrink-0">{label}</span>
-            <span className="font-medium text-right">{value}</span>
-          </li>
-        ))}
+      <ul className="space-y-1 text-sm">
+        {entries.map(({ key, label, value }, idx) => {
+          const matchingRawAnswer = rawAnswers?.find((a) => {
+            const mappedKey = STEP_ID_TO_DISPLAY_KEY[a.stepId];
+            return mappedKey === key;
+          });
+          const canClick = !!matchingRawAnswer && !!onBackToStep;
+
+          return (
+            <li
+              key={key}
+              className={cn(
+                "flex items-center justify-between gap-4 py-2.5 px-3 rounded-lg border-b border-border/40 last:border-0 group transition-colors",
+                canClick && "cursor-pointer hover:bg-muted/50"
+              )}
+              onClick={() => {
+                if (canClick && matchingRawAnswer) {
+                  onBackToStep(matchingRawAnswer.stepId);
+                }
+              }}
+            >
+              <span className="text-muted-foreground shrink-0">{label}</span>
+              <span className="flex items-center gap-2">
+                <span className="font-medium text-right">{value}</span>
+                {canClick && (
+                  <Pencil className="h-3 w-3 text-muted-foreground/50 group-hover:text-primary transition-colors" />
+                )}
+              </span>
+            </li>
+          );
+        })}
       </ul>
 
       <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -440,7 +486,7 @@ export function WizardSummary({
           ) : (
             <>
               Valider mes réponses
-              <Save className="h-4 w-4" />
+              <CheckCircle className="h-4 w-4" />
             </>
           )}
         </Button>

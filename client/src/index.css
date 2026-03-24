@@ -23,6 +23,9 @@
   --popover: 0 0% 100%;
   --popover-foreground: 215 50% 25%;
 
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 215 50% 25%;
+
   --muted: 210 40% 96%;
   --muted-foreground: 215 20% 45%;
 
@@ -37,6 +40,36 @@
 
   --font-serif: 'Playfair Display', serif;
   --font-sans: 'Inter', sans-serif;
+}
+
+.dark {
+  --primary: 213 60% 65%;
+  --primary-foreground: 215 50% 10%;
+
+  --accent: 45 70% 55%;
+  --accent-foreground: 45 10% 95%;
+
+  --background: 220 20% 10%;
+  --foreground: 210 20% 88%;
+
+  --card: 220 18% 13%;
+  --card-foreground: 210 20% 88%;
+
+  --popover: 220 18% 13%;
+  --popover-foreground: 210 20% 88%;
+
+  --secondary: 220 15% 18%;
+  --secondary-foreground: 210 20% 88%;
+
+  --muted: 220 15% 18%;
+  --muted-foreground: 215 15% 55%;
+
+  --destructive: 0 70% 55%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 220 15% 22%;
+  --input: 220 15% 22%;
+  --ring: 213 60% 65%;
 }
 
 @layer base {
@@ -54,6 +87,10 @@
 /* Custom Utilities */
 .glass-panel {
   @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+}
+
+.dark .glass-panel {
+  @apply bg-white/5 border-white/10;
 }
 
 .text-gradient {

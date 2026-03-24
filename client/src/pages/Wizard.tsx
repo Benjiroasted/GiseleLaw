@@ -19,8 +19,7 @@ import {
 import { WizardQuestion } from "@/components/WizardQuestion";
 import { PlaceholderScreen } from "@/components/PlaceholderScreen";
 import { WizardSummary } from "@/components/WizardSummary";
-import { ProgressTrail } from "@/components/ProgressTrail";
-import { Progress } from "@/components/ui/progress";
+import { BreadcrumbNav } from "@/components/BreadcrumbNav";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { ProcedureAnswers } from "@shared/schema";
 
@@ -341,14 +340,19 @@ export default function Wizard() {
 
   return (
     <Layout>
-      {isMobile && (
-        <div className="sticky top-0 z-10 w-full pl-6 pr-8 py-2 bg-background/95 backdrop-blur border-b">
-          <Progress value={progressPercent} className="h-1" />
+      {/* Breadcrumb navigation — always visible */}
+      <div className="sticky top-16 z-10 w-full bg-background/95 backdrop-blur border-b">
+        <div className="container mx-auto">
+          <BreadcrumbNav
+            answeredStepIds={answers.map((a) => a.stepId)}
+            currentStepId={isPlaceholder || isSummary ? null : currentStepId}
+          />
         </div>
-      )}
-      <div className="min-h-[80vh] flex">
+      </div>
+
+      <div className="min-h-[80vh] flex justify-center">
         {/* Main area — one screen at a time */}
-        <div className="flex-1 flex flex-col min-w-0 md:min-w-[80%]">
+        <div className="flex-1 flex flex-col max-w-3xl w-full">
           <div className="flex-1 flex flex-col justify-center px-4 py-8 md:py-12">
             <AnimatePresence mode="wait" initial={false}>
               {isPlaceholder && (
@@ -358,8 +362,10 @@ export default function Wizard() {
                 <WizardSummary
                   key="summary"
                   answers={procedureAnswers}
+                  rawAnswers={answers}
                   onValidate={handleValidate}
                   onModify={handleSummaryModify}
+                  onBackToStep={handleBackToStep}
                   isSubmitting={createProcedure.isPending || updateProcedure.isPending}
                 />
               )}
@@ -407,23 +413,6 @@ export default function Wizard() {
             </div>
           )}
         </div>
-
-        {/* Right panel — progress trail (inset from right edge) */}
-        <ProgressTrail
-          answers={trailAnswers}
-          currentStepId={trailCurrentStepId}
-          estimatedTotal={Math.max(estimatedTotal, 1)}
-          onBackToStep={handleBackToStep}
-          className="hidden md:flex mr-6"
-        />
-        {/* Mobile: thin vertical trail visible */}
-        <ProgressTrail
-          answers={trailAnswers}
-          currentStepId={trailCurrentStepId}
-          estimatedTotal={Math.max(estimatedTotal, 1)}
-          onBackToStep={handleBackToStep}
-          className="md:hidden mr-4"
-        />
       </div>
     </Layout>
   );
