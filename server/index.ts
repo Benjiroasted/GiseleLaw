@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
@@ -93,8 +94,10 @@ app.use((req, res, next) => {
   httpServer.listen(
     {
       port,
-      host: "0.0.0.0",
-      reusePort: true,
+      // Use "localhost" in dev so both http://localhost:5000 and http://127.0.0.1:5000 work
+      // (binding to "127.0.0.1" only listens on IPv4; when "localhost" resolves to IPv6 ::1, connections would fail)
+      host: process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost",
+      ...(process.platform === "linux" && { reusePort: true }),
     },
     () => {
       log(`serving on port ${port}`);

@@ -1,80 +1,270 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useLocation, useRoute } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCreateProcedure, useUpdateProcedure, useProcedure } from "@/hooks/use-procedures";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Progress } from "@/components/ui/progress";
-import { ChevronRight, ChevronLeft, Loader2, Save } from "lucide-react";
+import { ChevronLeft, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import {
+  getStep,
+  getFirstStepId,
+  getChipLabel,
+  PLACEHOLDER_NEXT,
+  STEP_CRIMINAL_BLOCK,
+  SUMMARY_STEP_ID,
+  type WizardStep,
+  type WizardOption,
+} from "@/data/wizardTree";
+import { WizardQuestion } from "@/components/WizardQuestion";
+import { PlaceholderScreen } from "@/components/PlaceholderScreen";
+import { WizardSummary } from "@/components/WizardSummary";
+import { ProgressTrail } from "@/components/ProgressTrail";
+import { Progress } from "@/components/ui/progress";
+import { useIsMobile } from "@/hooks/use-mobile";
+import type { ProcedureAnswers } from "@shared/schema";
 
-// Types matching schema logic
-type WizardData = {
-  type?: 'unpaid_work' | 'ip';
-  status?: 'employee' | 'freelance'; // If unpaid_work
-  ipType?: 'copyright' | 'trademark' | 'patent'; // If ip
-  hasProof?: 'yes' | 'no'; // If ip
-  date?: string; // The crucial date for calculations
-  title?: string;
+const STEP_ID_TO_ANSWER_KEY: Record<string, string> = {
+  step_1: "callerType",
+  step_1b: "moraleSubType",
+  step_2: "context",
+  step_3: "isCriminal",
+  step_3b: "criminalSituation",
+  step_3c: "criminalClarification",
+  step_3_opponent: "opponentType",
+  step_doc: "documentOfficiel",
+  step_doc_emp: "documentOfficiel",
+  step_doc_type: "documentType",
+  step_4: "disputeCategory",
+  step_4_immo: "immoCategory",
+  step_4_immo_role: "immoRole",
+  step_4_loc: "locataireProbleme",
+  step_4_prop: "proprietaireProbleme",
+  step_4_emploi: "emploiCategory",
+  step_5: "agreementType",
+  step_6: "problemType",
+  step_6a: "problemDetail",
+  step_6b: "problemDetail",
+  step_6c: "problemDetail",
+  step_7: "amount",
+  step_8: "miseEnDemeure",
+  // Depot garantie mappings
+  dg_edl: "dgEtatDesLieux",
+  dg_c1_degradations: "dgDegradations",
+  dg_c1_d_delai: "dgDelaiCles",
+  dg_c1_c_delai: "dgDelaiCles",
+  dg_c1_d_raison: "dgRaisonProprio",
+  dg_c1_c_raison: "dgRaisonProprio",
+  dg_c1_d_deg_justif: "dgJustifications",
+  dg_c1_d_deg_conteste: "dgContesteJustif",
+  dg_c1_d_deg_cont_dem: "dgDemandeRestitution",
+  dg_c1_d_deg_nojust_dem: "dgDemandeRestitution",
+  dg_c1_d_loy_impayes: "dgLoyersImpayes",
+  dg_c1_d_loy_montant: "dgMontantProportionne",
+  dg_c1_d_loy_disp_dem: "dgDemandeRestitution",
+  dg_c1_d_loy_non_dem: "dgDemandeRestitution",
+  dg_c1_d_auc_dem: "dgDemandeRestitution",
+  dg_c1_c_deg_justif: "dgJustifications",
+  dg_c1_c_deg_oui_dem: "dgDemandeRestitution",
+  dg_c1_c_deg_non_dem: "dgDemandeRestitution",
+  dg_c1_c_loy_impayes: "dgLoyersImpayes",
+  dg_c1_c_loy_montant: "dgMontantProportionne",
+  dg_c1_c_loy_disp_dem: "dgDemandeRestitution",
+  dg_c1_c_loy_non_dem: "dgDemandeRestitution",
+  dg_c1_c_auc_dem: "dgDemandeRestitution",
+  dg_c2_contestation: "dgContestation",
+  dg_c2_deg_delai: "dgDelaiCles",
+  dg_c2_deg_justif: "dgJustifications",
+  dg_c2_deg_oui_dem: "dgDemandeRestitution",
+  dg_c2_deg_non_dem: "dgDemandeRestitution",
+  dg_c2_mont_delai: "dgDelaiCles",
+  dg_c2_mont_justif: "dgJustifications",
+  dg_c2_mont_oui_dem: "dgDemandeRestitution",
+  dg_c2_mont_non_dem: "dgDemandeRestitution",
+  dg_c2_deux_delai: "dgDelaiCles",
+  dg_c2_deux_justif: "dgJustifications",
+  dg_c2_deux_oui_dem: "dgDemandeRestitution",
+  dg_c2_deux_non_dem: "dgDemandeRestitution",
+  dg_c3_raison: "dgAbsenceRaison",
 };
 
-// Wizard Steps Configuration
-const STEPS = [
-  { id: 'type', title: "Nature du litige" },
-  { id: 'details', title: "Détails" },
-  { id: 'date', title: "Dates clés" },
-  { id: 'summary', title: "Récapitulatif" },
-];
+function transformAnswerValue(stepId: string, value: string): unknown {
+  if (stepId === "step_3") {
+    if (value === "oui") return true;
+    if (value === "non") return false;
+    return value; // "je_ne_sais_pas" stays as string
+  }
+  if (stepId === "step_8") return value === "oui";
+  if (stepId === "step_doc" || stepId === "step_doc_emp") return value === "oui";
+  // Depot garantie boolean fields
+  if (stepId === "dg_c1_degradations") return value === "oui";
+  if (stepId.startsWith("dg_") && stepId.includes("_justif") && !stepId.includes("conteste")) return value === "oui";
+  if (stepId.startsWith("dg_") && stepId.includes("_conteste")) return value === "oui";
+  if (stepId.startsWith("dg_") && stepId.includes("_dem")) return value === "oui";
+  if (stepId.startsWith("dg_") && stepId.includes("_impayes")) return value === "oui";
+  if (stepId.startsWith("dg_") && stepId.includes("_montant")) return value === "oui";
+  return value;
+}
+
+function answersArrayToProcedureAnswers(
+  answers: Array<{ stepId: string; selectedValue: string }>
+): ProcedureAnswers {
+  const out: Record<string, unknown> = {};
+  for (const { stepId, selectedValue } of answers) {
+    const key = STEP_ID_TO_ANSWER_KEY[stepId];
+    if (key) (out as any)[key] = transformAnswerValue(stepId, selectedValue);
+  }
+  return out as ProcedureAnswers;
+}
+
+function estimateRemainingSteps(currentStepId: string): number {
+  let count = 0;
+  let id: string = currentStepId;
+  const seen = new Set<string>();
+  while (!seen.has(id)) {
+    seen.add(id);
+    const step = getStep(id);
+    if (!step || step.options.length === 0) break;
+    const first = step.options[0];
+    if (first.next === PLACEHOLDER_NEXT || first.next === SUMMARY_STEP_ID) break;
+    count++;
+    id = first.next === STEP_CRIMINAL_BLOCK ? "step_3b" : first.next;
+  }
+  return count;
+}
+
+const PLACEHOLDER_SCREEN_ID = "__placeholder__";
 
 export default function Wizard() {
   const [, setLocation] = useLocation();
   const [match, params] = useRoute("/procedure/:id/wizard");
   const isNew = match && params?.id === "new";
-  const procedureId = match && !isNew ? parseInt(params!.id) : undefined;
-  
+  const procedureId = match && !isNew ? parseInt(params!.id, 10) : undefined;
+
   const { toast } = useToast();
   const createProcedure = useCreateProcedure();
   const updateProcedure = useUpdateProcedure();
-  const { data: procedure, isLoading: isLoadingProcedure } = useProcedure(procedureId || 0);
+  const { data: procedure, isLoading: isLoadingProcedure } = useProcedure(procedureId ?? 0);
 
-  const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<WizardData>({});
-  
-  // Load existing data if editing
+  const [answers, setAnswers] = useState<Array<{ stepId: string; selectedValue: string; chipLabel: string }>>([]);
+  const [currentStepId, setCurrentStepId] = useState<string>(getFirstStepId());
+  const [direction, setDirection] = useState<"forward" | "backward">("forward");
+  const [pendingSelection, setPendingSelection] = useState<string | null>(null);
+  const pendingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
-    if (procedure && procedure.answers) {
-      setAnswers(procedure.answers as WizardData);
-      // Rough logic to restore step could go here, but starting at 0 is safe
+    if (!isNew && procedure?.answers) {
+      const a = procedure.answers as ProcedureAnswers;
+      const arr: Array<{ stepId: string; selectedValue: string; chipLabel: string }> = [];
+      let stepId = getFirstStepId();
+      while (stepId && stepId !== SUMMARY_STEP_ID && stepId !== PLACEHOLDER_SCREEN_ID) {
+        const step = getStep(stepId);
+        if (!step) break;
+        const key = STEP_ID_TO_ANSWER_KEY[stepId];
+        const raw = key ? (a as any)[key] : undefined;
+        if (raw === undefined || raw === null) break;
+        const value =
+          stepId === "step_3" || stepId === "step_8" ? (raw ? "oui" : "non") : String(raw);
+        const option = step.options.find((o) => o.value === value);
+        if (!option) break;
+        arr.push({ stepId, selectedValue: option.value, chipLabel: getChipLabel(option) });
+        const next = option.next;
+        if (next === PLACEHOLDER_NEXT) {
+          setCurrentStepId(PLACEHOLDER_SCREEN_ID);
+          setAnswers(arr);
+          return;
+        }
+        if (next === STEP_CRIMINAL_BLOCK) stepId = "step_3b";
+        else if (next === SUMMARY_STEP_ID) {
+          setCurrentStepId(SUMMARY_STEP_ID);
+          setAnswers(arr);
+          return;
+        } else stepId = next;
+      }
+      setAnswers(arr);
+      setCurrentStepId(stepId || getFirstStepId());
     }
-  }, [procedure]);
+  }, [isNew, procedure]);
 
-  const handleNext = () => {
-    if (step < STEPS.length - 1) {
-      setStep(step + 1);
-    } else {
-      handleSave();
+  const handleSelectOption = useCallback(
+    (option: WizardOption) => {
+      setPendingSelection(option.value);
+      if (pendingTimeoutRef.current) clearTimeout(pendingTimeoutRef.current);
+      pendingTimeoutRef.current = setTimeout(() => {
+        pendingTimeoutRef.current = null;
+        setPendingSelection(null);
+        const chipLabel = getChipLabel(option);
+        setAnswers((prev) => [...prev, { stepId: currentStepId, selectedValue: option.value, chipLabel }]);
+        setDirection("forward");
+
+        const next = option.next;
+        if (next === PLACEHOLDER_NEXT) {
+          setCurrentStepId(PLACEHOLDER_SCREEN_ID);
+          return;
+        }
+        if (next === STEP_CRIMINAL_BLOCK) {
+          setCurrentStepId("step_3b");
+          return;
+        }
+        if (next === SUMMARY_STEP_ID) {
+          setCurrentStepId(SUMMARY_STEP_ID);
+          return;
+        }
+        setCurrentStepId(next);
+      }, 250);
+    },
+    [currentStepId]
+  );
+
+  const goBack = useCallback(() => {
+    if (answers.length === 0) return;
+    const stepWeAreGoingBackTo = answers[answers.length - 1].stepId;
+    setAnswers((prev) => prev.slice(0, -1));
+    setCurrentStepId(stepWeAreGoingBackTo);
+    setDirection("backward");
+  }, [answers]);
+
+  const handleBackToStep = useCallback((stepId: string) => {
+    setAnswers((prev) => {
+      const idx = prev.findIndex((a) => a.stepId === stepId);
+      if (idx === -1) return prev;
+      return prev.slice(0, idx);
+    });
+    setCurrentStepId(stepId);
+    setDirection("backward");
+  }, []);
+
+  const handlePlaceholderModify = useCallback(() => {
+    if (answers.length === 0) return;
+    const stepWeAreGoingBackTo = answers[answers.length - 1].stepId;
+    setAnswers((prev) => prev.slice(0, -1));
+    setCurrentStepId(stepWeAreGoingBackTo);
+    setDirection("backward");
+  }, [answers]);
+
+  const handleSummaryModify = useCallback(() => {
+    if (answers.length === 0) return;
+    const stepWeAreGoingBackTo = answers[answers.length - 1].stepId;
+    setAnswers((prev) => prev.slice(0, -1));
+    setCurrentStepId(stepWeAreGoingBackTo);
+    setDirection("backward");
+  }, [answers]);
+
+  const handleValidate = useCallback(async () => {
+    const procedureAnswers = answersArrayToProcedureAnswers(answers);
+    let type = "placeholder";
+    if (procedureAnswers.amount !== undefined && procedureAnswers.miseEnDemeure !== undefined) {
+      type = "contrat_vente_non_paye";
+    } else if (procedureAnswers.dgEtatDesLieux !== undefined) {
+      type = "depot_garantie";
     }
-  };
-
-  const handleBack = () => {
-    if (step > 0) setStep(step - 1);
-  };
-
-  const handleSave = async () => {
+    const payload = {
+      title: `Procédure du ${new Date().toLocaleDateString("fr-FR")}`,
+      type,
+      answers: procedureAnswers as Record<string, unknown>,
+      status: "in_progress" as const,
+    };
     try {
-      const payload = {
-        title: answers.title || `Procédure du ${new Date().toLocaleDateString()}`,
-        type: answers.type || 'unpaid_work',
-        answers: answers,
-        status: 'in_progress'
-      };
-
       if (isNew) {
         const result = await createProcedure.mutateAsync(payload);
         setLocation(`/procedure/${result.id}/result`);
@@ -82,20 +272,58 @@ export default function Wizard() {
         await updateProcedure.mutateAsync({ id: procedureId, ...payload });
         setLocation(`/procedure/${procedureId}/result`);
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Erreur",
         description: "Impossible d'enregistrer la procédure. Veuillez réessayer.",
         variant: "destructive",
       });
     }
-  };
+  }, [answers, isNew, procedureId, createProcedure, updateProcedure, setLocation, toast]);
 
-  const updateAnswer = (key: keyof WizardData, value: any) => {
-    setAnswers(prev => ({ ...prev, [key]: value }));
-  };
+  useEffect(() => {
+    return () => {
+      if (pendingTimeoutRef.current) clearTimeout(pendingTimeoutRef.current);
+    };
+  }, []);
 
-  if (!isNew && isLoadingProcedure) {
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Backspace" && answers.length > 0) {
+        const target = e.target as HTMLElement;
+        if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) return;
+        e.preventDefault();
+        goBack();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [goBack, answers.length]);
+
+  const isPlaceholder = currentStepId === PLACEHOLDER_SCREEN_ID;
+  const isSummary = currentStepId === SUMMARY_STEP_ID;
+  const currentStep = !isPlaceholder && !isSummary ? getStep(currentStepId) : null;
+
+  const trailAnswers = answers.map((a) => ({ stepId: a.stepId, chipLabel: a.chipLabel }));
+  const trailCurrentStepId =
+    isPlaceholder || isSummary ? null : currentStepId;
+  const estimatedTotal =
+    answers.length +
+    1 +
+    (trailCurrentStepId ? estimateRemainingSteps(trailCurrentStepId) : 0);
+
+  const isMobile = useIsMobile();
+  const procedureAnswers = answersArrayToProcedureAnswers(answers);
+  const progressPercent =
+    estimatedTotal > 0 ? Math.round((answers.length / estimatedTotal) * 100) : 0;
+  const selectedValueForStep =
+    currentStep && pendingSelection !== null
+      ? pendingSelection
+      : currentStep
+        ? answers.find((a) => a.stepId === currentStepId)?.selectedValue ?? null
+        : null;
+
+  if (!isNew && procedureId !== undefined && isLoadingProcedure) {
     return (
       <div className="h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -103,241 +331,91 @@ export default function Wizard() {
     );
   }
 
-  // Determine completion percentage
-  const progress = ((step + 1) / STEPS.length) * 100;
-
   return (
     <Layout>
-      <div className="max-w-2xl mx-auto py-8">
-        {/* Progress Header */}
-        <div className="mb-8 space-y-4">
-          <div className="flex justify-between items-center text-sm font-medium text-muted-foreground">
-            <span>Étape {step + 1} sur {STEPS.length}</span>
-            <span>{Math.round(progress)}%</span>
-          </div>
-          <Progress value={progress} className="h-2" />
-          <h2 className="text-2xl font-serif font-bold text-primary">
-            {STEPS[step].title}
-          </h2>
+      {isMobile && (
+        <div className="sticky top-0 z-10 w-full pl-6 pr-8 py-2 bg-background/95 backdrop-blur border-b">
+          <Progress value={progressPercent} className="h-1" />
         </div>
-
-        {/* Wizard Content */}
-        <Card className="border-none shadow-lg bg-white/80 backdrop-blur-sm">
-          <CardContent className="p-6 md:p-8 min-h-[400px] flex flex-col">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={step}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="flex-1"
-              >
-                {/* STEP 0: TYPE SELECTION */}
-                {step === 0 && (
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <Label className="text-lg">Quel est le sujet de votre problème juridique ?</Label>
-                      <p className="text-sm text-muted-foreground">Sélectionnez la catégorie qui correspond le mieux à votre situation.</p>
-                    </div>
-                    
-                    <RadioGroup 
-                      value={answers.type} 
-                      onValueChange={(val) => updateAnswer('type', val)}
-                      className="grid grid-cols-1 gap-4"
-                    >
-                      <div className={`flex items-start space-x-3 space-y-0 rounded-xl border p-4 cursor-pointer transition-all hover:border-primary ${answers.type === 'unpaid_work' ? 'border-primary bg-primary/5 ring-1 ring-primary' : ''}`}>
-                        <RadioGroupItem value="unpaid_work" id="unpaid" className="mt-1" />
-                        <div className="grid gap-1.5 leading-none">
-                          <Label htmlFor="unpaid" className="text-base font-semibold cursor-pointer">Travail et Rémunération</Label>
-                          <p className="text-sm text-muted-foreground">Salaires impayés, factures non réglées, primes manquantes.</p>
-                        </div>
-                      </div>
-                      
-                      <div className={`flex items-start space-x-3 space-y-0 rounded-xl border p-4 cursor-pointer transition-all hover:border-primary ${answers.type === 'ip' ? 'border-primary bg-primary/5 ring-1 ring-primary' : ''}`}>
-                        <RadioGroupItem value="ip" id="ip" className="mt-1" />
-                        <div className="grid gap-1.5 leading-none">
-                          <Label htmlFor="ip" className="text-base font-semibold cursor-pointer">Propriété Intellectuelle</Label>
-                          <p className="text-sm text-muted-foreground">Contrefaçon, droit d'auteur, utilisation non autorisée de vos créations.</p>
-                        </div>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                )}
-
-                {/* STEP 1: DETAILS (Branching Logic) */}
-                {step === 1 && (
-                  <div className="space-y-6">
-                    {answers.type === 'unpaid_work' ? (
-                      <>
-                        <div className="space-y-2">
-                          <Label className="text-lg">Quel est votre statut ?</Label>
-                        </div>
-                        <RadioGroup 
-                          value={answers.status} 
-                          onValueChange={(val) => updateAnswer('status', val)}
-                          className="space-y-3"
-                        >
-                          <div className="flex items-center space-x-3 rounded-lg border p-4 hover:bg-slate-50">
-                            <RadioGroupItem value="employee" id="employee" />
-                            <Label htmlFor="employee" className="flex-1 cursor-pointer">Je suis salarié(e)</Label>
-                          </div>
-                          <div className="flex items-center space-x-3 rounded-lg border p-4 hover:bg-slate-50">
-                            <RadioGroupItem value="freelance" id="freelance" />
-                            <Label htmlFor="freelance" className="flex-1 cursor-pointer">Je suis travailleur indépendant / Freelance</Label>
-                          </div>
-                        </RadioGroup>
-                      </>
-                    ) : (
-                      <>
-                        <div className="space-y-2">
-                          <Label className="text-lg">Quel type de droit est concerné ?</Label>
-                        </div>
-                        <RadioGroup 
-                          value={answers.ipType} 
-                          onValueChange={(val) => updateAnswer('ipType', val)}
-                          className="space-y-3"
-                        >
-                          <div className="flex items-center space-x-3 rounded-lg border p-4 hover:bg-slate-50">
-                            <RadioGroupItem value="copyright" id="copyright" />
-                            <Label htmlFor="copyright" className="flex-1 cursor-pointer">Droit d'auteur (œuvre artistique, texte, code...)</Label>
-                          </div>
-                          <div className="flex items-center space-x-3 rounded-lg border p-4 hover:bg-slate-50">
-                            <RadioGroupItem value="trademark" id="trademark" />
-                            <Label htmlFor="trademark" className="flex-1 cursor-pointer">Marque déposée</Label>
-                          </div>
-                        </RadioGroup>
-
-                        <div className="pt-4 space-y-2">
-                          <Label className="text-lg">Avez-vous des preuves de votre antériorité ?</Label>
-                          <p className="text-sm text-muted-foreground">Dépôt légal, enveloppe Soleau, fichiers sources datés, etc.</p>
-                          <RadioGroup 
-                            value={answers.hasProof} 
-                            onValueChange={(val) => updateAnswer('hasProof', val)}
-                            className="flex gap-4 pt-2"
-                          >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="yes" id="proof-yes" />
-                              <Label htmlFor="proof-yes">Oui</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="no" id="proof-no" />
-                              <Label htmlFor="proof-no">Non / Incertain</Label>
-                            </div>
-                          </RadioGroup>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-
-                {/* STEP 2: DATES */}
-                {step === 2 && (
-                  <div className="space-y-6">
-                    <div className="space-y-4">
-                      <Label className="text-lg">
-                        {answers.type === 'unpaid_work' 
-                          ? "Depuis quelle date le paiement est-il dû ?" 
-                          : "À quelle date avez-vous découvert l'atteinte à vos droits ?"}
-                      </Label>
-                      <p className="text-sm text-muted-foreground">
-                        Cette date est essentielle pour calculer les délais de prescription.
-                      </p>
-                      <Input
-                        type="date"
-                        className="h-12 text-lg"
-                        value={answers.date || ''}
-                        onChange={(e) => updateAnswer('date', e.target.value)}
-                      />
-                    </div>
-
-                    <div className="pt-4 space-y-4">
-                      <Label className="text-lg">Donnez un nom à ce dossier</Label>
-                      <Input
-                        type="text"
-                        placeholder="Ex: Facture Client X ou Contrefaçon Logo"
-                        className="h-12"
-                        value={answers.title || ''}
-                        onChange={(e) => updateAnswer('title', e.target.value)}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* STEP 3: SUMMARY */}
-                {step === 3 && (
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-semibold text-primary">Tout est prêt !</h3>
-                    <p className="text-muted-foreground">
-                      Voici un résumé des informations saisies. Cliquez sur "Générer mon plan d'action" pour obtenir votre calendrier juridique.
-                    </p>
-
-                    <div className="bg-slate-50 p-6 rounded-xl border space-y-4">
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-muted-foreground">Type</span>
-                        <span className="font-medium text-right">
-                          {answers.type === 'unpaid_work' ? 'Travail non payé' : 'Propriété Intellectuelle'}
-                        </span>
-                      </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span className="text-muted-foreground">Détail</span>
-                        <span className="font-medium text-right">
-                          {answers.type === 'unpaid_work' 
-                            ? (answers.status === 'employee' ? 'Salarié' : 'Indépendant')
-                            : (answers.ipType === 'copyright' ? "Droit d'auteur" : "Marque")
-                          }
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Date clé</span>
-                        <span className="font-medium text-right">
-                          {answers.date ? format(new Date(answers.date), 'dd MMMM yyyy', { locale: fr }) : 'Non renseignée'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </motion.div>
+      )}
+      <div className="min-h-[80vh] flex">
+        {/* Main area — one screen at a time */}
+        <div className="flex-1 flex flex-col min-w-0 md:min-w-[80%]">
+          <div className="flex-1 flex flex-col justify-center px-4 py-8 md:py-12">
+            <AnimatePresence mode="wait" initial={false}>
+              {isPlaceholder && (
+                <PlaceholderScreen key="placeholder" onModify={handlePlaceholderModify} />
+              )}
+              {isSummary && (
+                <WizardSummary
+                  key="summary"
+                  answers={procedureAnswers}
+                  onValidate={handleValidate}
+                  onModify={handleSummaryModify}
+                  isSubmitting={createProcedure.isPending || updateProcedure.isPending}
+                />
+              )}
+              {currentStep && (
+                <motion.div
+                  key={currentStepId}
+                  initial={
+                    direction === "forward"
+                      ? { opacity: 0, y: 60 }
+                      : { opacity: 0, y: -60 }
+                  }
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={
+                    direction === "forward"
+                      ? { opacity: 0, y: -60 }
+                      : { opacity: 0, y: 60 }
+                  }
+                  transition={{
+                    duration: direction === "forward" ? 0.4 : 0.3,
+                    ease: direction === "forward" ? "easeOut" : "easeIn",
+                  }}
+                  className="w-full max-w-2xl mx-auto"
+                >
+                  <WizardQuestion
+                    step={currentStep}
+                    selectedValue={selectedValueForStep}
+                    onSelect={handleSelectOption}
+                  />
+                </motion.div>
+              )}
             </AnimatePresence>
+          </div>
 
-            <div className="flex justify-between mt-auto pt-8">
+          {/* Back button — bottom left */}
+          {!isPlaceholder && (currentStep || isSummary) && answers.length > 0 && (
+            <div className="px-4 pb-8 pt-4">
               <Button
                 variant="ghost"
-                onClick={handleBack}
-                disabled={step === 0}
-                className="text-muted-foreground hover:text-foreground"
+                onClick={goBack}
+                className="text-muted-foreground hover:text-foreground gap-2"
               >
-                <ChevronLeft className="mr-2 h-4 w-4" />
+                <ChevronLeft className="h-4 w-4" />
                 Retour
               </Button>
-              
-              <Button
-                onClick={handleNext}
-                disabled={
-                  (step === 0 && !answers.type) ||
-                  (step === 2 && !answers.date) ||
-                  createProcedure.isPending || 
-                  updateProcedure.isPending
-                }
-                className="min-w-[140px]"
-              >
-                {createProcedure.isPending || updateProcedure.isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : step === STEPS.length - 1 ? (
-                  <>
-                    Générer mon plan
-                    <Save className="ml-2 h-4 w-4" />
-                  </>
-                ) : (
-                  <>
-                    Suivant
-                    <ChevronRight className="ml-2 h-4 w-4" />
-                  </>
-                )}
-              </Button>
             </div>
-          </CardContent>
-        </Card>
+          )}
+        </div>
+
+        {/* Right panel — progress trail (inset from right edge) */}
+        <ProgressTrail
+          answers={trailAnswers}
+          currentStepId={trailCurrentStepId}
+          estimatedTotal={Math.max(estimatedTotal, 1)}
+          onBackToStep={handleBackToStep}
+          className="hidden md:flex mr-6"
+        />
+        {/* Mobile: thin vertical trail visible */}
+        <ProgressTrail
+          answers={trailAnswers}
+          currentStepId={trailCurrentStepId}
+          estimatedTotal={Math.max(estimatedTotal, 1)}
+          onBackToStep={handleBackToStep}
+          className="md:hidden mr-4"
+        />
       </div>
     </Layout>
   );

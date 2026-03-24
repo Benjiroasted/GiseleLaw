@@ -45,7 +45,7 @@ export default function Dashboard() {
       <div className="max-w-5xl mx-auto py-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-serif font-bold text-primary">Mes Dossiers</h1>
-          <Link href="/procedure/new">
+          <Link href="/procedure/new/wizard">
             <Button className="shadow-md">
               <Plus className="mr-2 h-4 w-4" />
               Nouveau dossier
@@ -125,7 +125,7 @@ export default function Dashboard() {
             <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
               Commencez une nouvelle procédure pour obtenir un plan d'action personnalisé.
             </p>
-            <Link href="/procedure/new">
+            <Link href="/procedure/new/wizard">
               <Button>Créer mon premier dossier</Button>
             </Link>
           </div>

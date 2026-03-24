@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Scale, LogOut, User as UserIcon } from "lucide-react";
+import { Scale, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import {
   DropdownMenu,
@@ -10,6 +10,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+function getUserInitial(user: { firstName?: string | null; lastName?: string | null; email?: string | null }): string {
+  if (user.firstName) return user.firstName[0].toUpperCase();
+  if (user.lastName) return user.lastName[0].toUpperCase();
+  if (user.email) return user.email[0].toUpperCase();
+  return "U";
+}
+
+function getUserDisplayName(user: { firstName?: string | null; lastName?: string | null; email?: string | null }): string {
+  if (user.firstName && user.lastName) return `${user.firstName} ${user.lastName}`;
+  if (user.firstName) return user.firstName;
+  if (user.email) return user.email;
+  return "Utilisateur";
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -31,36 +45,59 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </Link>
 
           <nav className="flex items-center gap-6">
-            <Link href="/" className={`text-sm font-medium transition-colors hover:text-primary ${location === '/' ? 'text-primary' : 'text-muted-foreground'}`}>
+            <Link
+              href="/"
+              className={`text-sm font-medium transition-colors hover:text-primary ${location === "/" ? "text-primary" : "text-muted-foreground"}`}
+            >
               Accueil
             </Link>
+            <Link
+              href="/practitioners"
+              className={`text-sm font-medium transition-colors hover:text-primary ${location === "/practitioners" ? "text-primary" : "text-muted-foreground"}`}
+            >
+              Trouver un avocat
+            </Link>
             {user && (
-              <Link href="/dashboard" className={`text-sm font-medium transition-colors hover:text-primary ${location === '/dashboard' ? 'text-primary' : 'text-muted-foreground'}`}>
+              <Link
+                href="/dashboard"
+                className={`text-sm font-medium transition-colors hover:text-primary ${location === "/dashboard" ? "text-primary" : "text-muted-foreground"}`}
+              >
                 Mes Dossiers
               </Link>
             )}
-            
+
             {user ? (
-               <DropdownMenu>
-               <DropdownMenuTrigger asChild>
-                 <div className="flex items-center gap-2 cursor-pointer">
-                   <Avatar className="h-8 w-8 border border-border">
-                     <AvatarImage src={user.profileImageUrl || undefined} alt={user.username || "User"} />
-                     <AvatarFallback>{(user.username?.[0] || "U").toUpperCase()}</AvatarFallback>
-                   </Avatar>
-                 </div>
-               </DropdownMenuTrigger>
-               <DropdownMenuContent align="end" className="w-56">
-                 <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
-                 <DropdownMenuSeparator />
-                 <DropdownMenuItem onClick={() => logout()} className="text-destructive focus:text-destructive cursor-pointer">
-                   <LogOut className="mr-2 h-4 w-4" />
-                   <span>Se déconnecter</span>
-                 </DropdownMenuItem>
-               </DropdownMenuContent>
-             </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div className="flex items-center gap-2 cursor-pointer">
+                    <Avatar className="h-8 w-8 border border-border">
+                      <AvatarImage
+                        src={user.profileImageUrl || undefined}
+                        alt={getUserDisplayName(user)}
+                      />
+                      <AvatarFallback>
+                        {getUserInitial(user)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>Mon Compte</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => logout()}
+                    className="text-destructive focus:text-destructive cursor-pointer"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Se déconnecter</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
-              <a href="/api/login" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+              <a
+                href="/api/login"
+                className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+              >
                 Se connecter
               </a>
             )}
@@ -68,19 +105,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <main className="flex-1 container mx-auto px-4 py-8">
-        {children}
-      </main>
+      <main className="flex-1 container mx-auto px-4 py-8">{children}</main>
 
       <footer className="border-t bg-white py-12">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Scale className="h-5 w-5 text-muted-foreground" />
-            <span className="font-serif font-bold text-muted-foreground">Gisèle.law</span>
+            <span className="font-serif font-bold text-muted-foreground">
+              Gisèle.law
+            </span>
           </div>
           <p className="text-sm text-muted-foreground mb-4 max-w-lg mx-auto">
-            Gisèle.law est un outil d'information juridique et ne remplace pas les conseils d'un avocat. 
-            Pour des cas complexes, nous vous recommandons de consulter un professionnel.
+            Gisèle.law est un outil d'information juridique et ne remplace pas
+            les conseils d'un avocat. Pour des cas complexes, nous vous
+            recommandons de consulter un professionnel.
           </p>
           <div className="text-xs text-muted-foreground/60">
             © {new Date().getFullYear()} Gisèle.law - Tous droits réservés.

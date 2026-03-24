@@ -11,13 +11,54 @@ export { users, sessions };
 export const procedures = pgTable("procedures", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").references(() => users.id),
-  type: text("type").notNull(), // 'unpaid_work' | 'ip'
+  type: text("type").notNull(), // 'contrat_vente_non_paye' | 'placeholder' | legacy 'unpaid_work' | 'ip'
   title: text("title").notNull(),
-  answers: jsonb("answers").$type<Record<string, any>>().notNull(),
+  answers: jsonb("answers").$type<Record<string, unknown>>().notNull(),
   status: text("status").notNull().default("in_progress"), // 'in_progress', 'completed'
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+/** Shape of procedure.answers for the decision-tree wizard (v2) */
+export interface ProcedureAnswers {
+  callerType?: "particulier" | "autre";
+  moraleSubType?: "entreprise" | "employeur" | "commercant" | "association";
+  context?: "vie_perso" | "activite_pro";
+  isCriminal?: boolean | "je_ne_sais_pas";
+  criminalSituation?: "porter_plainte" | "convoque_police" | "poursuivi_tribunal";
+  criminalClarification?: "infraction" | "procedure_police" | "conflit";
+  opponentType?: "particulier" | "professionnel" | "employeur" | "banque" | "assurance" | "administration";
+  documentOfficiel?: boolean;
+  documentType?: "mise_en_demeure" | "convocation" | "assignation" | "decision_justice" | "ne_sais_pas";
+  disputeCategory?: string;
+  // Immobilier branch
+  immoCategory?: "location" | "achat_vente_immo" | "travaux" | "voisinage_immo";
+  immoRole?: "locataire" | "proprietaire";
+  locataireProbleme?: string;
+  proprietaireProbleme?: string;
+  // Emploi branch
+  emploiCategory?: string;
+  // Depot garantie branch
+  dgEtatDesLieux?: "signe" | "pas_signe" | "pas_realise";
+  dgDegradations?: boolean;
+  dgDelaiCles?: string;
+  dgRaisonProprio?: "degradation" | "loyers_impayes" | "aucune";
+  dgJustifications?: boolean;
+  dgContesteJustif?: boolean;
+  dgDemandeRestitution?: boolean;
+  dgLoyersImpayes?: boolean;
+  dgMontantProportionne?: boolean;
+  dgContestation?: "degradation" | "montant_reparations" | "les_deux";
+  dgAbsenceRaison?: "proprio_absent" | "locataire_absent" | "desaccord";
+  // Achat/vente/service branch
+  agreementType?: string;
+  problemType?: string;
+  problemDetail?: string;
+  amount?: "less_5000" | "more_5000";
+  miseEnDemeure?: boolean;
+  /** Legacy / optional */
+  [key: string]: unknown;
+}
 
 export const practitioners = pgTable("practitioners", {
   id: serial("id").primaryKey(),

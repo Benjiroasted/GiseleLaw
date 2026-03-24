@@ -33,8 +33,9 @@ export default defineConfig({
   },
   server: {
     fs: {
-      strict: true,
-      deny: ["**/.*"],
+      strict: false, // Allow @shared imports (outside client/) - required for local dev
+      // Only deny dotfiles when on Replit (prevents .env leakage)
+      ...(process.env.REPL_ID && { deny: ["**/.*"] }),
     },
   },
 });
