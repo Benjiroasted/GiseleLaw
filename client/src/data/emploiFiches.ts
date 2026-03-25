@@ -67,7 +67,7 @@ export const FICHE_87: FicheContent = {
       ],
     },
     {
-      title: "1/ Une contestation amiable",
+      title: "Une contestation amiable",
       blocks: [
         {
           bullets: [
@@ -84,7 +84,7 @@ export const FICHE_87: FicheContent = {
       ],
     },
     {
-      title: "2/ Tentative de conciliation devant le Conseil de prud'hommes (CPH)",
+      title: "Tentative de conciliation devant le Conseil de prud'hommes (CPH)",
       blocks: [
         {
           paragraphs: [
@@ -99,7 +99,7 @@ export const FICHE_87: FicheContent = {
       ],
     },
     {
-      title: "3/ En cas d'échec de la conciliation — Action en justice",
+      title: "En cas d'échec de la conciliation — Action en justice",
       blocks: [
         {
           paragraphs: [
@@ -179,7 +179,7 @@ export const FICHE_88: FicheContent = {
       ],
     },
     {
-      title: "1/ Une contestation amiable",
+      title: "Une contestation amiable",
       blocks: [
         {
           bullets: [
@@ -196,7 +196,7 @@ export const FICHE_88: FicheContent = {
       ],
     },
     {
-      title: "2/ Tentative de conciliation devant le Conseil de prud'hommes (CPH)",
+      title: "Tentative de conciliation devant le Conseil de prud'hommes (CPH)",
       blocks: [
         {
           paragraphs: [
@@ -211,7 +211,7 @@ export const FICHE_88: FicheContent = {
       ],
     },
     {
-      title: "3/ En cas d'échec de la conciliation — Action en justice",
+      title: "En cas d'échec de la conciliation — Action en justice",
       blocks: [
         {
           paragraphs: [

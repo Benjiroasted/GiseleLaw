@@ -36,7 +36,7 @@ const DG_CONCILIATION: FicheStep = {
     {
       paragraphs: [
         "Obligatoire si le montant est < 5 000€. Facultatif si le montant est > 5 000€.",
-        "Avant de saisir un juge, il existe 2 démarches amiables *(article 750-1 du Code de procédure civile)* :",
+        "Avant de saisir un juge, il existe 2 démarches amiables — article 750-1 du Code de procédure civile :",
         "**Conciliation :**",
       ],
       bullets: [
@@ -105,7 +105,7 @@ const DG_ACTION_JUGE: FicheStep = {
       paragraphs: [
         "Devant le **Juge du Contentieux de la Protection**, du tribunal dont dépend le lieu loué.",
         "**Rappel des délais de prescription :**",
-        "L'action peut être engagée jusqu'à **3 ans** après la date à laquelle le paiement était dû *(article 7-1 de la loi n°89-462 du 6 juillet 1989)*.",
+        "L'action peut être engagée jusqu'à **3 ans** après la date à laquelle le paiement était dû — article 7-1 de la loi n°89-462 du 6 juillet 1989.",
       ],
     },
   ],
@@ -200,7 +200,6 @@ interface DGFicheParams {
 
 function buildDGFiche(p: DGFicheParams): FicheContent {
   const steps: FicheStep[] = [];
-  let stepNum = 1;
 
   if (p.infoOnly) {
     return {
@@ -213,17 +212,14 @@ function buildDGFiche(p: DGFicheParams): FicheContent {
   }
 
   if (!p.demandeFaite) {
-    steps.push({ ...DG_MED_BLOCK, title: `${stepNum}/ Mise en demeure amiable` });
-    stepNum++;
+    steps.push({ ...DG_MED_BLOCK, title: `Mise en demeure amiable` });
   }
 
-  steps.push({ ...DG_CONCILIATION, title: `${stepNum}/ Tentative de conciliation ou de médiation` });
-  stepNum++;
+  steps.push({ ...DG_CONCILIATION, title: `Tentative de conciliation ou de médiation` });
 
-  steps.push({ ...DG_INJONCTION, title: `${stepNum}/ Injonction de payer *(article 1405 du code de procédure civile)*` });
-  stepNum++;
+  steps.push({ ...DG_INJONCTION, title: `Injonction de payer — article 1405 du code de procédure civile` });
 
-  steps.push({ ...DG_ACTION_JUGE, title: `${stepNum}/ Action devant le juge` });
+  steps.push({ ...DG_ACTION_JUGE, title: `Action devant le juge` });
 
   return {
     header: p.header,

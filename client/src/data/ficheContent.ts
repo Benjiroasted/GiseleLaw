@@ -68,7 +68,7 @@ const MISE_EN_DEMEURE_BLOCK: FicheStepBlock = {
 
 const CONCILIATION_MEDIATION_OBLIGATOIRE: FicheStepBlock = {
   paragraphs: [
-    "Avant de saisir un juge, il existe 2 démarches amiables *(article 750-1 du Code de procédure civile)* :",
+    "Avant de saisir un juge, il existe 2 démarches amiables — article 750-1 du Code de procédure civile :",
     "**Conciliation :**",
   ],
   bullets: [
@@ -121,7 +121,7 @@ const PETITES_CREANCES_SUITE: FicheStepBlock = {
 const ACTION_JUGE_5ANS: FicheStepBlock = {
   paragraphs: [
     "**Rappel des délais de prescription :**",
-    "L'action peut être engagée jusqu'à **5 ans** après la date à laquelle le paiement était dû *(article 2224 du code civil)*.",
+    "L'action peut être engagée jusqu'à **5 ans** après la date à laquelle le paiement était dû — article 2224 du code civil.",
     "**Précision :** Pour un achat à un particulier via une plateforme en ligne, la plateforme est seulement un intermédiaire. L'action doit être dirigée contre le particulier qui n'a pas payé.",
   ],
 };
@@ -129,7 +129,7 @@ const ACTION_JUGE_5ANS: FicheStepBlock = {
 const ACTION_JUGE_5ANS_AVOCAT: FicheStepBlock = {
   paragraphs: [
     "**Rappel des délais de prescription :**",
-    "L'action peut être engagée jusqu'à **5 ans** après la date à laquelle le paiement était dû *(article 2224 du code civil)*.",
+    "L'action peut être engagée jusqu'à **5 ans** après la date à laquelle le paiement était dû — article 2224 du code civil.",
     "**Précision :** Pour un achat à un particulier via une plateforme en ligne, la plateforme est seulement un intermédiaire. L'action doit être dirigée contre le particulier qui n'a pas payé.",
     "**L'avocat est obligatoire** pour les litiges dont le montant est > 10 000 €.",
   ],
@@ -192,19 +192,19 @@ export const FICHE_1: FicheContent = {
   ctaPractitionersHref: "/practitioners?specialty=Droit%20civil",
   steps: [
     {
-      title: "1/ Une mise en demeure amiable",
+      title: "Une mise en demeure amiable",
       blocks: [MISE_EN_DEMEURE_BLOCK],
     },
     {
-      title: "2/ Une tentative de conciliation ou de médiation",
+      title: "Une tentative de conciliation ou de médiation",
       blocks: [CONCILIATION_MEDIATION_OBLIGATOIRE, MEDIATION_BLOCK, SAISINE_DIRECTE],
     },
     {
-      title: "3/ Une procédure simplifiée de recouvrement des petites créances",
+      title: "Une procédure simplifiée de recouvrement des petites créances",
       blocks: [PETITES_CREANCES, PETITES_CREANCES_SUITE],
     },
     {
-      title: "4/ Action devant un juge",
+      title: "Action devant un juge",
       blocks: [ACTION_JUGE_5ANS],
     },
   ],
@@ -220,15 +220,15 @@ export const FICHE_2: FicheContent = {
   ctaPractitionersHref: "/practitioners?specialty=Droit%20civil",
   steps: [
     {
-      title: "1/ Une tentative de conciliation ou de médiation",
+      title: "Une tentative de conciliation ou de médiation",
       blocks: [CONCILIATION_MEDIATION_OBLIGATOIRE, MEDIATION_BLOCK, SAISINE_DIRECTE],
     },
     {
-      title: "3/ Une procédure simplifiée de recouvrement des petites créances",
+      title: "Une procédure simplifiée de recouvrement des petites créances",
       blocks: [PETITES_CREANCES, PETITES_CREANCES_SUITE],
     },
     {
-      title: "4/ Action devant un juge",
+      title: "Action devant un juge",
       blocks: [ACTION_JUGE_5ANS],
     },
   ],
@@ -244,19 +244,19 @@ export const FICHE_3: FicheContent = {
   ctaPractitionersHref: "/practitioners?specialty=Droit%20civil",
   steps: [
     {
-      title: "1/ Une mise en demeure amiable",
+      title: "Une mise en demeure amiable",
       blocks: [MISE_EN_DEMEURE_BLOCK],
     },
     {
-      title: "1.2/ La conciliation et la médiation ne sont pas obligatoires",
+      title: "La conciliation et la médiation ne sont pas obligatoires",
       blocks: [CONCILIATION_NON_OBLIGATOIRE, MEDIATION_BLOCK],
     },
     {
-      title: "2/ Une injonction de payer (article 1405 du code de procédure civile)",
+      title: "Une injonction de payer (article 1405 du code de procédure civile)",
       blocks: [INJONCTION_PAYER, INJONCTION_PROCEDURE, INJONCTION_A_SAVOIR],
     },
     {
-      title: "3/ Action devant un juge",
+      title: "Action devant un juge",
       blocks: [ACTION_JUGE_5ANS_AVOCAT],
     },
   ],
@@ -272,15 +272,15 @@ export const FICHE_4: FicheContent = {
   ctaPractitionersHref: "/practitioners?specialty=Droit%20civil",
   steps: [
     {
-      title: "1/ La conciliation et la médiation ne sont pas obligatoires",
+      title: "La conciliation et la médiation ne sont pas obligatoires",
       blocks: [CONCILIATION_NON_OBLIGATOIRE, MEDIATION_BLOCK],
     },
     {
-      title: "1.2/ Une injonction de payer (article 1405 du code de procédure civile)",
+      title: "Une injonction de payer (article 1405 du code de procédure civile)",
       blocks: [INJONCTION_PAYER, INJONCTION_PROCEDURE, INJONCTION_A_SAVOIR],
     },
     {
-      title: "2/ Action devant un juge",
+      title: "Action devant un juge",
       blocks: [ACTION_JUGE_5ANS_AVOCAT],
     },
   ],
