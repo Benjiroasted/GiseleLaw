@@ -1,120 +1,223 @@
-# Gisèle.law — Guide juridique intelligent
+# Gisèle.law — Guide d'installation (Mac + Cursor)
 
-Gisèle.law est une application web qui aide les particuliers à comprendre leurs droits et à naviguer les procédures juridiques en France.
+Ce guide vous accompagne de A à Z pour installer et lancer le projet Gisèle.law sur votre Mac après avoir téléchargé le zip depuis GitHub.
 
-L'utilisateur répond à un questionnaire interactif et reçoit une fiche personnalisée avec les étapes de résolution, les délais de prescription et les textes de loi applicables.
+---
 
-## Fonctionnalités
+## Étape 1 — Dézipper le projet
 
-- **Questionnaire intelligent** — arbre de décision adaptatif couvrant le droit civil, immobilier et du travail
-- **Fiches juridiques** — étapes de résolution détaillées avec références aux articles de loi
-- **Annuaire d'avocats** — recherche par spécialité, ville et aide juridictionnelle
-- **Sauvegarde de dossiers** — suivi des procédures (compte requis)
+1. Aller dans votre dossier **Téléchargements**
+2. Double-cliquer sur `GiseleLaw-main.zip` pour le décompresser
+3. Vous obtenez un dossier `GiseleLaw-main`
 
-## Stack technique
+---
 
-- **Frontend** : React 18, Vite, Tailwind CSS, Radix UI, Framer Motion, Wouter
-- **Backend** : Node.js, Express 5, TypeScript
-- **Base de données** : PostgreSQL avec Drizzle ORM
-- **Auth** : Sessions Express (mock local en dev)
+## Étape 2 — Installer Cursor
 
-## Installation locale
+Si vous n'avez pas encore Cursor :
 
-### Prérequis
+1. Aller sur **https://cursor.sh**
+2. Télécharger la version Mac
+3. Glisser l'app dans le dossier **Applications**
+4. Ouvrir Cursor
 
-- [Node.js](https://nodejs.org/) v18+ (recommandé : v20+)
-- [PostgreSQL](https://www.postgresql.org/) 15+
-- npm (inclus avec Node.js)
+---
 
-### 1. Cloner le projet
+## Étape 3 — Ouvrir le projet dans Cursor
+
+1. Dans Cursor : **File → Open Folder**
+2. Naviguer vers `~/Downloads/GiseleLaw-main`
+3. Cliquer **Open**
+
+Vous devriez voir l'arborescence du projet dans le panneau de gauche.
+
+---
+
+## Étape 4 — Ouvrir le terminal intégré
+
+Dans Cursor : **Terminal → New Terminal** (ou raccourci `Ctrl + ù`)
+
+Le terminal s'ouvre en bas de l'écran, déjà positionné dans le dossier du projet.
+
+---
+
+## Étape 5 — Installer Homebrew (si pas déjà fait)
+
+Homebrew est le gestionnaire de paquets pour Mac. Dans le terminal :
 
 ```bash
-git clone https://github.com/VOTRE-USERNAME/Gisele-Law.git
-cd Gisele-Law
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-### 2. Installer les dépendances
+Suivre les instructions à l'écran. À la fin, Homebrew affiche des commandes à copier-coller pour l'ajouter au PATH. **Faites-le.**
+
+Pour vérifier que ça fonctionne :
 
 ```bash
-npm install
+brew --version
 ```
 
-### 3. Configurer la base de données
+---
 
-Installer PostgreSQL si pas déjà fait :
+## Étape 6 — Installer Node.js
 
 ```bash
-# macOS avec Homebrew
+brew install node
+```
+
+Vérifier :
+
+```bash
+node -v
+npm -v
+```
+
+Vous devriez voir des numéros de version (v18+ pour node, 9+ pour npm).
+
+---
+
+## Étape 7 — Installer PostgreSQL
+
+```bash
 brew install postgresql@15
 brew services start postgresql@15
 ```
 
-Créer la base de données :
+Ajouter PostgreSQL au PATH (copier-coller la ligne entière) :
+
+```bash
+echo 'export PATH="/opt/homebrew/opt/postgresql@15/bin:$PATH"' >> ~/.zprofile && source ~/.zprofile
+```
+
+Vérifier :
+
+```bash
+psql --version
+```
+
+---
+
+## Étape 8 — Créer la base de données
 
 ```bash
 createdb gisele_law
 ```
 
-### 4. Configurer les variables d'environnement
+Si vous obtenez une erreur "role does not exist", notez votre nom d'utilisateur Mac :
 
 ```bash
-cp .env.example .env
+whoami
 ```
 
-Modifier `.env` si nécessaire (les valeurs par défaut fonctionnent pour une installation locale standard).
+Le résultat (par exemple `marie`) est votre username PostgreSQL.
 
-### 5. Initialiser le schéma de la base
+---
+
+## Étape 9 — Créer le fichier .env
+
+Dans le terminal Cursor (toujours dans le dossier du projet) :
+
+```bash
+echo "DATABASE_URL=postgresql://$(whoami)@localhost:5432/gisele_law
+SESSION_SECRET=demo-secret-local" > .env
+```
+
+Cette commande utilise automatiquement votre nom d'utilisateur Mac.
+
+Pour vérifier que le fichier est bien créé :
+
+```bash
+cat .env
+```
+
+Vous devriez voir quelque chose comme :
+
+```
+DATABASE_URL=postgresql://marie@localhost:5432/gisele_law
+SESSION_SECRET=demo-secret-local
+```
+
+---
+
+## Étape 10 — Installer les dépendances du projet
+
+```bash
+npm install
+```
+
+Cela prend 1-2 minutes. Des warnings jaunes sont normaux, les erreurs rouges ne le sont pas.
+
+---
+
+## Étape 11 — Initialiser la base de données
 
 ```bash
 npm run db:push
 ```
 
-### 6. Lancer l'application
+Cela crée les tables nécessaires dans PostgreSQL.
+
+---
+
+## Étape 12 — Lancer l'application
 
 ```bash
 npm run dev
 ```
 
-Ouvrir [http://localhost:5000](http://localhost:5000) dans votre navigateur.
-
-### Connexion en mode développement
-
-En local, l'authentification utilise un mock. Visitez `/api/login` pour vous connecter avec un utilisateur fictif (utile pour tester la sauvegarde de dossiers).
-
-## Scripts disponibles
-
-| Commande | Description |
-|---|---|
-| `npm run dev` | Serveur de développement (Express + Vite) |
-| `npm run build` | Build de production |
-| `npm run start` | Serveur de production |
-| `npm run db:push` | Appliquer le schéma à la base de données |
-
-## Structure du projet
+Le terminal affiche :
 
 ```
-├── client/              # Frontend React
-│   ├── src/
-│   │   ├── components/  # Composants UI (Layout, Wizard, Fiches...)
-│   │   ├── data/        # Arbre de décision + contenu des fiches
-│   │   ├── hooks/       # Hooks custom (auth, procédures)
-│   │   ├── lib/         # Utilitaires
-│   │   └── pages/       # Pages (Home, Wizard, Result, Dashboard)
-│   └── index.html
-├── server/              # Backend Express
-│   ├── routes.ts        # API endpoints
-│   ├── storage.ts       # Accès base de données
-│   └── index.ts         # Point d'entrée serveur
-├── shared/              # Types et schéma partagés
-│   ├── schema.ts        # Tables Drizzle + types
-│   └── routes.ts        # Contrat API (paths + Zod)
-└── package.json
+serving on port 5000
 ```
 
-## Avertissement
+---
 
-Gisèle.law est un outil d'information juridique et **ne remplace pas les conseils d'un avocat**. Pour des cas complexes, consultez un professionnel du droit.
+## Étape 13 — Ouvrir dans le navigateur
 
-## Licence
+Ouvrir **http://localhost:5000** dans Chrome, Safari ou Firefox.
 
-Propriétaire — tous droits réservés.
+Vous devriez voir la page d'accueil de Gisèle.law.
+
+---
+
+## Scénarios de démonstration
+
+Voir le fichier **DEMO.md** pour 5 scénarios de démo complets avec les réponses à cliquer.
+
+En résumé :
+
+| Démo | Parcours | Résultat |
+|------|----------|----------|
+| Vente non payée | Particulier → Vie perso → Vente → < 5000€ | Fiche avec 4 étapes de résolution |
+| Dépôt de garantie | Particulier → Vie perso → Location → Locataire | Fiche avec cadre légal + démarches |
+| Licenciement | Particulier → Vie perso → Employeur → Faute simple | Fiche prud'hommes |
+| Dark mode | Cliquer lune/soleil en haut à droite | Thème sombre |
+| Tooltips | Survoler le "?" à côté des options | Popup de définition |
+
+---
+
+## Commandes utiles
+
+| Action | Commande |
+|--------|---------|
+| Lancer l'app | `npm run dev` |
+| Arrêter l'app | `Ctrl + C` dans le terminal |
+| Relancer après arrêt | `npm run dev` |
+| Se connecter (mode dev) | Aller sur http://localhost:5000/api/login |
+| Réinitialiser la base | `npm run db:push` |
+
+---
+
+## En cas de problème
+
+| Erreur | Solution |
+|--------|---------|
+| `command not found: npm` | Refaire l'étape 6 (installer Node.js) |
+| `command not found: psql` | Refaire l'étape 7 (PATH PostgreSQL) |
+| `role "xxx" does not exist` | Vérifier le username dans `.env` avec `whoami` |
+| `database "gisele_law" does not exist` | Relancer `createdb gisele_law` |
+| `DATABASE_URL must be set` | Vérifier que `.env` existe : `cat .env` |
+| `EADDRINUSE: port 5000` | `kill -9 $(lsof -t -i:5000)` puis `npm run dev` |
+| Page blanche dans le navigateur | `Cmd + Shift + R` pour hard refresh |
+| `Cannot find module` | Relancer `npm install` |
