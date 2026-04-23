@@ -52,7 +52,7 @@ const LABELS: Record<
   context: {
     label: "Contexte",
     valueLabels: {
-      vie_perso: "Vie perso",
+      vie_perso: "Vie personnelle",
       activite_pro: "Activité professionnelle",
     },
   },

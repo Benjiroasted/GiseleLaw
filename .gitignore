@@ -3,3 +3,9 @@ dist/
 .env
 *.log
 .DS_Store
+
+# Generated decision tree exports + their scripts
+decision-tree.csv
+decision-tree.drawio
+script/exportDecisionTreeCsv.ts
+script/exportDecisionTreeDrawio.ts

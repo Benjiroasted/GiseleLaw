@@ -142,8 +142,7 @@ export default function Result() {
           {!user && (
             <div className="mt-8 pt-8 border-t bg-muted/50 p-6 rounded-lg text-center">
               <p className="text-sm text-muted-foreground mb-4">
-                Créez un compte gratuit pour sauvegarder votre dossier et suivre
-                vos délais.
+                Créez un compte gratuit pour sauvegarder votre dossier.
               </p>
               <a href="/api/login">
                 <Button variant="outline">Se connecter</Button>

@@ -24,6 +24,7 @@ export interface WizardStep {
   id: string;
   question: string;
   questionTooltipKey?: string;
+  questionNoWrap?: boolean;
   helpText?: string;
   contextLabel?: string;
   label?: string;
@@ -50,7 +51,7 @@ export const WIZARD_STEPS: WizardStep[] = [
   // ──────────── STEP 1 : Êtes-vous ────────────
   {
     id: "step_1",
-    question: "Êtes-vous",
+    question: "Êtes-vous ?",
     options: [
       {
         label: "Un particulier",
@@ -60,9 +61,10 @@ export const WIZARD_STEPS: WizardStep[] = [
         next: "step_2",
       },
       {
-        label: "Autre",
+        label: "Un professionnel",
+        sublabel: "entreprise, banque, assurance, administration, etc…",
         value: "autre",
-        chipLabel: "Autre",
+        chipLabel: "Professionnel",
         tooltipKey: "autre_entite",
         next: "step_1b",
       },
@@ -88,31 +90,58 @@ export const WIZARD_STEPS: WizardStep[] = [
   // ──────────── STEP 2 : Contexte vie perso / activité pro ────────────
   {
     id: "step_2",
-    question: "Agissez-vous dans le cadre de votre vie perso ou dans le cadre de votre activité pro ?",
+    question: "Agissez-vous dans le cadre de votre vie personnelle ou dans le cadre de votre activité professionnelle ?",
     options: [
-      { label: "Vie perso", value: "vie_perso", chipLabel: "Vie perso", next: "step_3" },
       {
-        label: "Activité pro",
+        label: "Vie personnelle",
+        value: "vie_perso",
+        chipLabel: "Vie personnelle",
+        tooltipKey: "vie_personnelle",
+        next: "step_3",
+      },
+      {
+        label: "Activité professionnelle",
         value: "activite_pro",
-        chipLabel: "Activité pro",
+        chipLabel: "Activité professionnelle",
+        tooltipKey: "activite_pro_contexte",
         next: "step_1b",
       },
     ],
   },
 
-  // ──────────── STEP 3 : Infraction pénale ? ────────────
+  // ──────────── STEP 3 : Nature de la situation ────────────
   {
     id: "step_3",
-    question:
-      "Votre situation concerne-t-elle une infraction ? (violence, escroquerie, harcèlement, contravention…)",
+    question: "Votre situation ressemble à :",
     options: [
-      { label: "Oui", value: "oui", next: "step_3b" },
-      { label: "Non", value: "non", next: "step_3_opponent" },
-      { label: "Je ne sais pas", value: "je_ne_sais_pas", chipLabel: "Ne sais pas", next: "step_3c" },
+      {
+        label: "Une infraction ou un acte illégal",
+        sublabel:
+          "vous souhaitez porter plainte pour un vol, agression, harcèlement, etc…",
+        value: "infraction",
+        chipLabel: "Infraction",
+        next: PLACEHOLDER_NEXT,
+      },
+      {
+        label: "Une procédure avec la police ou le tribunal",
+        sublabel:
+          "vous avez reçu une contravention, vous êtes convoqué.e, etc…",
+        value: "procedure_police",
+        chipLabel: "Procédure police",
+        next: PLACEHOLDER_NEXT,
+      },
+      {
+        label: "Un conflit ou un désaccord avec une autre personne / entité",
+        sublabel:
+          "contrat non respecté, somme d'argent manquante, licenciement contesté, divorce, etc…",
+        value: "conflit",
+        chipLabel: "Conflit / désaccord",
+        next: "step_3_opponent",
+      },
     ],
   },
 
-  // ──────────── STEP 3B : Bloc pénal (placeholder) ────────────
+  // ──────────── STEP 3B : Bloc pénal (placeholder, réservé pour futur) ────────────
   {
     id: "step_3b",
     question: "Votre situation :",
@@ -131,66 +160,42 @@ export const WIZARD_STEPS: WizardStep[] = [
     ],
   },
 
-  // ──────────── STEP 3C : Clarification "je ne sais pas" ────────────
-  {
-    id: "step_3c",
-    question: "Votre situation ressemble plutôt à :",
-    options: [
-      {
-        label: "Une infraction ou un acte illégal (violence, vol, escroquerie, harcèlement…)",
-        value: "infraction",
-        chipLabel: "Infraction",
-        next: "step_3b",
-      },
-      {
-        label: "Une procédure avec la police ou un tribunal",
-        value: "procedure_police",
-        chipLabel: "Procédure police",
-        next: "step_3b",
-      },
-      {
-        label: "Un conflit ou un désaccord avec une personne",
-        value: "conflit",
-        chipLabel: "Conflit / désaccord",
-        next: "step_3_opponent",
-      },
-    ],
-  },
-
   // ──────────── STEP 3_OPPONENT : Type d'adversaire (vie perso) ────────────
   {
     id: "step_3_opponent",
     question: "Votre problème concerne :",
     options: [
       {
-        label: "Un particulier (voisin, membre de la famille, bailleur ponctuel…)",
+        label: "Un particulier",
+        sublabel: "voisin, membre de la famille, bailleur ponctuel, etc…",
         value: "particulier",
         chipLabel: "vs Particulier",
         next: "step_doc",
       },
       {
-        label: "Professionnel, entreprise, commerçant (société, agence locative, vendeur…)",
+        label: "Un professionnel, une entreprise, un commerçant",
+        sublabel: "société, agence locative, vendeur, etc…",
         value: "professionnel",
         chipLabel: "vs Professionnel",
         next: "step_doc",
       },
       {
-        label: "Employeur",
+        label: "Un employeur",
         value: "employeur",
         chipLabel: "vs Employeur",
         next: "step_doc_emp",
       },
-      { label: "Banque", value: "banque", next: PLACEHOLDER_NEXT },
-      { label: "Assurance", value: "assurance", next: PLACEHOLDER_NEXT },
-      { label: "Administration", value: "administration", next: PLACEHOLDER_NEXT },
+      { label: "Une banque", value: "banque", next: PLACEHOLDER_NEXT },
+      { label: "Une assurance", value: "assurance", next: PLACEHOLDER_NEXT },
+      { label: "Une administration", value: "administration", next: PLACEHOLDER_NEXT },
     ],
   },
 
   // ──────────── STEP DOC : Document officiel ? (civil) ────────────
   {
     id: "step_doc",
-    question:
-      "Avez-vous déjà reçu un document officiel concernant votre problème ? (convocation, mise en demeure, courrier d'avocat, décision de justice…)",
+    question: "Avez-vous déjà reçu un document officiel concernant votre problème ?",
+    helpText: "convocation, mise en demeure, courrier d'avocat, décision de justice, etc…",
     options: [
       { label: "Oui", value: "oui", chipLabel: "Doc: oui", next: "step_doc_type" },
       { label: "Non", value: "non", chipLabel: "Doc: non", next: "step_4" },
@@ -200,8 +205,8 @@ export const WIZARD_STEPS: WizardStep[] = [
   // ──────────── STEP DOC EMP : Document officiel ? (employeur) ────────────
   {
     id: "step_doc_emp",
-    question:
-      "Avez-vous déjà reçu un document officiel concernant votre problème ? (convocation, mise en demeure, courrier d'avocat, décision de justice…)",
+    question: "Avez-vous déjà reçu un document officiel concernant votre problème ?",
+    helpText: "convocation, mise en demeure, courrier d'avocat, décision de justice, etc…",
     options: [
       { label: "Oui", value: "oui", chipLabel: "Doc: oui", next: "step_doc_type" },
       { label: "Non", value: "non", chipLabel: "Doc: non", next: "step_4_emploi" },
@@ -215,7 +220,8 @@ export const WIZARD_STEPS: WizardStep[] = [
     options: [
       { label: "Une mise en demeure", value: "mise_en_demeure", next: PLACEHOLDER_NEXT },
       {
-        label: "Une convocation (police ou tribunal)",
+        label: "Une convocation",
+        sublabel: "police, tribunal, etc…",
         value: "convocation",
         next: PLACEHOLDER_NEXT,
       },
@@ -245,48 +251,49 @@ export const WIZARD_STEPS: WizardStep[] = [
     options: [
       {
         label: "Un achat, une vente, un service qui s'est mal passé",
-        sublabel: "objet acheté, prestation non réalisée, contrat non respecté…",
+        sublabel: "objet acheté, prestation non réalisée, contrat non respecté, etc…",
         value: "achat_vente_service",
         chipLabel: "Achat / vente",
         next: "step_5",
       },
       {
-        label: "Un prêt d'argent ou une somme qui ne vous a pas été remboursée",
+        label: "Un prêt d'argent",
+        sublabel: "ou une somme qui ne vous a pas été remboursée",
         value: "pret_argent",
         chipLabel: "Prêt / dette",
         next: PLACEHOLDER_NEXT,
       },
       {
         label: "Un logement ou un bien immobilier",
-        sublabel: "vente, location, caution…",
+        sublabel: "vente, location, caution, etc…",
         value: "logement_immobilier",
         chipLabel: "Logement / immo",
         next: "step_4_immo",
       },
       {
         label: "Un dommage que vous avez subi",
-        sublabel: "accident, dégradation, blessure…",
+        sublabel: "accident, dégradation, blessure, etc…",
         value: "dommage",
         chipLabel: "Dommage subi",
         next: PLACEHOLDER_NEXT,
       },
       {
         label: "Une situation familiale ou un héritage",
-        sublabel: "divorce, garde d'enfant, héritage…",
+        sublabel: "divorce, garde d'enfant, héritage, etc…",
         value: "famille_heritage",
         chipLabel: "Famille / héritage",
         next: PLACEHOLDER_NEXT,
       },
       {
         label: "Un conflit de voisinage",
-        sublabel: "nuisances, bruit, limite de terrain…",
+        sublabel: "nuisances, bruit, limite de terrain, etc…",
         value: "voisinage",
         chipLabel: "Voisinage",
         next: PLACEHOLDER_NEXT,
       },
       {
         label: "Une infraction ou un acte illégal",
-        sublabel: "vol, diffamation, harcèlement…",
+        sublabel: "vol, diffamation, harcèlement, etc…",
         value: "infraction_penale",
         chipLabel: "Infraction",
         next: "step_3b",
@@ -304,21 +311,22 @@ export const WIZARD_STEPS: WizardStep[] = [
     question: "Votre problème concerne :",
     options: [
       {
-        label: "Un objet / un bien vendu ou acheté",
+        label: "Un objet / un bien vendu ou acheté (avec traces écrites)",
+        sublabel: "contrat, sms, mail",
         value: "objet_bien",
         chipLabel: "Objet / bien",
         next: "step_6",
       },
       {
-        label: "Une prestation ou service rendu",
-        value: "prestation_service",
-        chipLabel: "Prestation / service",
+        label: "Un objet / un bien vendu ou acheté (avec accord verbal)",
+        value: "autre_accord",
+        chipLabel: "Objet / bien (verbal)",
         next: PLACEHOLDER_NEXT,
       },
       {
-        label: "Un autre accord écrit ou verbal entre vous et cette personne",
-        value: "autre_accord",
-        chipLabel: "Autre accord",
+        label: "Une prestation ou service rendu",
+        value: "prestation_service",
+        chipLabel: "Prestation / service",
         next: PLACEHOLDER_NEXT,
       },
     ],
@@ -330,15 +338,17 @@ export const WIZARD_STEPS: WizardStep[] = [
     question: "Votre problème concerne :",
     options: [
       {
-        label: "Les informations données ou ce qui a été convenu au moment de l'accord",
+        label: "Les informations données ou convenues, avant ou au moment de l'accord",
         value: "informations_accord",
         chipLabel: "Infos / accord",
+        tooltipKey: "infos_accord",
         next: "step_6a",
       },
       {
         label: "L'accord n'est pas respecté ou ne se déroule pas comme prévu",
         value: "accord_pas_respecte",
         chipLabel: "Accord non respecté",
+        tooltipKey: "accord_non_respecte",
         next: "step_6b",
       },
       {
@@ -540,7 +550,8 @@ export const WIZARD_STEPS: WizardStep[] = [
         next: PLACEHOLDER_NEXT,
       },
       {
-        label: "L'état du logement (insalubrité…)",
+        label: "L'état du logement",
+        sublabel: "insalubrité, etc…",
         value: "etat_logement",
         chipLabel: "État logement",
         next: PLACEHOLDER_NEXT,
@@ -582,28 +593,28 @@ export const WIZARD_STEPS: WizardStep[] = [
     options: [
       {
         label: "Une rupture de votre contrat de travail",
-        sublabel: "licenciement, rupture conventionnelle, démission, fin de CDD…",
+        sublabel: "licenciement, rupture conventionnelle, démission, fin de CDD, etc…",
         value: "rupture_contrat",
         chipLabel: "Rupture contrat",
         next: "emp_fin_contrat",
       },
       {
         label: "Votre contrat de travail ou embauche",
-        sublabel: "promesse d'embauche, période d'essai, requalification du contrat, contrat non signé…",
+        sublabel: "promesse d'embauche, période d'essai, requalification du contrat, contrat non signé, etc…",
         value: "contrat_embauche",
         chipLabel: "Contrat / embauche",
         next: PLACEHOLDER_NEXT,
       },
       {
         label: "Votre salaire ou une autre somme impayée",
-        sublabel: "salaire, heure supplémentaire, prime, indemnité de licenciement, congé payé…",
+        sublabel: "salaire, heure supplémentaire, prime, indemnité de licenciement, congé payé, etc…",
         value: "salaire_impaye",
         chipLabel: "Salaire impayé",
         next: PLACEHOLDER_NEXT,
       },
       {
         label: "Vos conditions de travail ou un conflit avec l'employeur",
-        sublabel: "harcèlement, conditions de travail dégradées…",
+        sublabel: "harcèlement, conditions de travail dégradées, etc…",
         value: "conditions_travail",
         chipLabel: "Conditions travail",
         next: PLACEHOLDER_NEXT,
@@ -616,14 +627,14 @@ export const WIZARD_STEPS: WizardStep[] = [
       },
       {
         label: "Une discrimination au travail",
-        sublabel: "sexe, grossesse, handicap…",
+        sublabel: "sexe, grossesse, handicap, etc…",
         value: "discrimination",
         chipLabel: "Discrimination",
         next: PLACEHOLDER_NEXT,
       },
       {
         label: "Une sanction disciplinaire",
-        sublabel: "avertissement, mise à pied…",
+        sublabel: "avertissement, mise à pied, etc…",
         value: "sanction",
         chipLabel: "Sanction",
         next: PLACEHOLDER_NEXT,
@@ -1114,24 +1125,21 @@ export const WIZARD_STEPS: WizardStep[] = [
         sublabel: "faute du salarié dans l'exercice de ses fonctions",
         value: "faute",
         chipLabel: "Faute",
-        tooltipKey: "faute_licenciement",
         next: "emp_type_faute",
       },
       {
-        label: "Licenciement pour insuffisance professionnelle / résultats insuffisants",
-        sublabel: "incapacité du salarié à réaliser les tâches confiées / à atteindre les objectifs",
+        label: "Licenciement pour insuffisance professionnelle ou résultats insuffisants",
+        sublabel: "incapacité du salarié à réaliser les tâches confiées ou à atteindre les objectifs",
         value: "insuffisance",
         chipLabel: "Insuffisance",
-        tooltipKey: "insuffisance_pro",
         next: "emp_procedure",
       },
       {
         label: "Licenciement pour motifs économiques",
-        sublabel: "difficulté économique, réorganisation de l'entreprise…",
+        sublabel: "difficulté économique, réorganisation de l'entreprise, etc…",
         value: "economique",
         chipLabel: "Motif éco",
-        tooltipKey: "motif_economique",
-        next: PLACEHOLDER_NEXT,
+        next: "emp_procedure",
       },
     ],
   },
@@ -1168,13 +1176,14 @@ export const WIZARD_STEPS: WizardStep[] = [
   // ──────────── Procédure respectée ? ────────────
   {
     id: "emp_procedure",
-    question: "La procédure a-t-elle été respectée ? (entretien préalable, notification, préavis, remise de document…)",
+    question: "La procédure a-t-elle été respectée ?",
+    helpText: "entretien préalable, notification, préavis, remise de document, etc…",
     options: [
       {
         label: "Oui",
         value: "oui",
         chipLabel: "Procédure: oui",
-        next: SUMMARY_STEP_ID, // → F87 or F88 based on fault type
+        next: "emp_contester",
       },
       {
         label: "Non",
@@ -1186,6 +1195,39 @@ export const WIZARD_STEPS: WizardStep[] = [
         label: "Je ne sais pas",
         value: "ne_sais_pas",
         chipLabel: "Procédure: ?",
+        next: PLACEHOLDER_NEXT,
+      },
+    ],
+  },
+
+  // ──────────── Que souhaitez-vous contester ? ────────────
+  {
+    id: "emp_contester",
+    question: "Que souhaitez-vous contester ?",
+    options: [
+      {
+        label: "Motif du licenciement",
+        sublabel: "je pense qu'il est injustifié",
+        value: "motif",
+        chipLabel: "Motif",
+        next: PLACEHOLDER_NEXT,
+      },
+      {
+        label: "Indemnités ou sommes versées / non versées",
+        value: "indemnites",
+        chipLabel: "Indemnités",
+        next: PLACEHOLDER_NEXT,
+      },
+      {
+        label: "Préavis",
+        value: "preavis",
+        chipLabel: "Préavis",
+        next: PLACEHOLDER_NEXT,
+      },
+      {
+        label: "Aucun, je veux comprendre mes droits",
+        value: "aucun",
+        chipLabel: "Comprendre",
         next: PLACEHOLDER_NEXT,
       },
     ],
@@ -1213,7 +1255,7 @@ const STEP_TO_SECTION: Record<string, string> = {
   // Profil
   step_1: "profil", step_1b: "profil", step_2: "profil",
   // Situation
-  step_3: "situation", step_3b: "situation", step_3c: "situation",
+  step_3: "situation", step_3b: "situation",
   step_3_opponent: "situation", step_doc: "situation", step_doc_emp: "situation",
   step_doc_type: "situation",
   // Catégorie
@@ -1245,7 +1287,7 @@ const STEP_TO_SECTION: Record<string, string> = {
   dg_c2_deux_non_dem: "details", dg_c3_raison: "details",
   // Employment details
   emp_fin_contrat: "details", emp_situation: "details", emp_motif: "details",
-  emp_type_faute: "details", emp_procedure: "details",
+  emp_type_faute: "details", emp_procedure: "details", emp_contester: "details",
   // Recap
   step_9: "recap",
 };

@@ -8,6 +8,7 @@ import Home from "@/pages/Home";
 import Wizard from "@/pages/Wizard";
 import Result from "@/pages/Result";
 import Dashboard from "@/pages/Dashboard";
+import AvocatDashboard from "@/pages/AvocatDashboard";
 import Practitioners from "@/pages/Practitioners";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -15,7 +16,7 @@ function Router() {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    return null; // Or a loading spinner
+    return null;
   }
 
   return (
@@ -24,10 +25,13 @@ function Router() {
       <Route path="/procedure/:id/wizard" component={Wizard} />
       <Route path="/procedure/:id/result" component={Result} />
       <Route path="/practitioners" component={Practitioners} />
-      
-      {/* Protected Routes - simple check for now */}
+
+      {/* Protected Routes */}
       <Route path="/dashboard">
-        {user ? <Dashboard /> : <Home />} 
+        {user ? <Dashboard /> : <Home />}
+      </Route>
+      <Route path="/avocat">
+        {user ? <AvocatDashboard /> : <Home />}
       </Route>
 
       {/* Fallback to 404 */}

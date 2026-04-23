@@ -67,9 +67,9 @@ export default function Home() {
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Gisèle analyse votre situation juridique, vous présente les actions
-              possibles et vous guide pas à pas. Avant d'avoir besoin d'un
-              avocat, vous pouvez déjà agir — simplement et gratuitement.
+              Décrivez votre situation en quelques questions : Gisèle vous
+              fournit une synthèse claire du cadre légal et des actions
+              envisageables, puis vous oriente vers un avocat si besoin.
             </p>
           </motion.div>
 
@@ -119,7 +119,7 @@ export default function Home() {
             </h3>
             <p className="text-muted-foreground">
               Répondez à quelques questions simples. Gisèle identifie votre
-              situation juridique et vous dit si une action est possible.
+              situation et vous présente le cadre juridique applicable.
             </p>
           </motion.div>
 
@@ -134,9 +134,8 @@ export default function Home() {
               Découvrez vos options
             </h3>
             <p className="text-muted-foreground">
-              Qui saisir, quand et comment : obtenez une feuille de route claire
-              avec les démarches gratuites à tenter avant de faire appel à un
-              professionnel.
+              Qui saisir, quand et comment : accédez à une synthèse claire des
+              démarches possibles avant de faire appel à un professionnel.
             </p>
           </motion.div>
 
@@ -151,8 +150,8 @@ export default function Home() {
               Agissez ou faites-vous accompagner
             </h3>
             <p className="text-muted-foreground">
-              Suivez les étapes vous-même ou trouvez un avocat spécialisé.
-              La plupart des premières démarches sont simples et gratuites.
+              Avancez par vous-même ou, si nécessaire, entrez en relation avec
+              un avocat adapté à votre situation.
             </p>
           </motion.div>
         </motion.div>
@@ -211,8 +210,8 @@ export default function Home() {
                 Recevez votre feuille de route
               </h3>
               <p className="text-sm text-muted-foreground">
-                Gisèle vous indique les démarches possibles, les délais
-                applicables et les textes de loi. Qui saisir, quand et comment.
+                Gisèle rappelle le cadre légal applicable à votre situation et
+                vous indique les démarches possibles et les délais applicables.
               </p>
             </motion.div>
 
@@ -250,7 +249,7 @@ export default function Home() {
                 size="lg"
                 className="h-14 px-8 text-lg rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:-translate-y-0.5 transition-all bg-primary hover:bg-primary/90 text-white"
               >
-                Commencer ma procédure
+                Commencer le questionnaire
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
@@ -261,15 +260,23 @@ export default function Home() {
         <div className="mt-24 bg-primary/5 rounded-3xl p-8 md:p-12 text-center">
           <Scale className="h-12 w-12 text-primary mx-auto mb-6 opacity-20" />
           <h2 className="text-2xl font-serif font-bold text-primary mb-4">
-            Information juridique, pas conseil personnalisé
+            Information juridique générale, pas de conseil personnalisé
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Gisèle vous aide à comprendre qui saisir, quand et comment. Ce
-            n'est pas du conseil personnalisé sur la stratégie de votre dossier
-            — pour cela, un avocat reste indispensable. Notre mission : rendre
-            le droit accessible pour que chacun puisse agir en connaissance de
-            cause.
-          </p>
+          <div className="text-muted-foreground max-w-2xl mx-auto leading-relaxed space-y-4">
+            <p>
+              Gisèle fournit, à partir de vos réponses, une synthèse automatisée
+              du cadre légal et des démarches possibles.
+            </p>
+            <p>
+              Ces informations sont générales et ne constituent pas un conseil
+              juridique personnalisé ni une recommandation stratégique.
+            </p>
+            <p>
+              Pour obtenir un accompagnement personnalisé à votre situation, il
+              est recommandé de consulter un avocat. Gisèle vous aide en vous
+              mettant en relation avec un professionnel.
+            </p>
+          </div>
         </div>
       </div>
     </Layout>
