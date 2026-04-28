@@ -77,8 +77,9 @@ export function FicheResult({ fiche }: FicheResultProps) {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl md:text-3xl font-serif font-bold text-primary mb-4">{fiche.header}</h1>
-        <p className="text-muted-foreground leading-relaxed">{fiche.intro}</p>
+        <h1 className="text-2xl md:text-3xl font-serif font-bold text-primary leading-snug">
+          {fiche.intro}
+        </h1>
       </div>
 
       {fiche.cadreLegal && (
@@ -115,6 +116,9 @@ export function FicheResult({ fiche }: FicheResultProps) {
                 <div className="absolute -left-12 top-6 hidden md:flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white text-sm font-bold">{stepIdx + 1}</div>
                 <CardHeader className="pb-2">
                   <h2 className="text-lg font-semibold text-primary font-serif">{renderFormattedText(step.title)}</h2>
+                  {step.subtitle && (
+                    <p className="text-xs text-muted-foreground mt-1">{renderFormattedText(step.subtitle)}</p>
+                  )}
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {step.blocks.map((block, blockIdx) => (

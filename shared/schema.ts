@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal, date, uniqueIndex, index } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -6,6 +6,7 @@ import { z } from "zod";
 // Import Auth Models
 import { users, sessions } from "./models/auth";
 export { users, sessions };
+export type { UserRole } from "./models/auth";
 
 // === TABLE DEFINITIONS ===
 export const procedures = pgTable("procedures", {
@@ -66,6 +67,14 @@ export interface ProcedureAnswers {
   [key: string]: unknown;
 }
 
+/** Verification lifecycle for a lawyer profile. */
+export type VerificationStatus =
+  | "draft" // Just submitted, waiting for review
+  | "pending_review" // Form complete, in admin queue
+  | "verified" // Approved & visible publicly
+  | "rejected" // Rejected by admin (see rejectionReason)
+  | "suspended"; // Was verified but later disabled (omission CNB, plainte, etc.)
+
 export const practitioners = pgTable("practitioners", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").references(() => users.id),
@@ -82,8 +91,62 @@ export const practitioners = pgTable("practitioners", {
   similarCasesTravail: integer("similar_cases_travail").default(0),
   similarCasesIp: integer("similar_cases_ip").default(0),
   rating: decimal("rating", { precision: 2, scale: 1 }).default("0.0"),
+  // ── Lawyer signup / verification metadata ──
+  email: text("email"),
+  phone: text("phone"),
+  /** Barreau d'inscription (CNB), e.g. "PARIS" */
+  barreau: text("barreau"),
+  /** FK to cnb_directory if matched at signup (nullable for legacy demo rows). */
+  cnbMatchId: integer("cnb_match_id"),
+  verificationStatus: varchar("verification_status")
+    .$type<VerificationStatus>()
+    .notNull()
+    .default("verified"),
+  verifiedAt: timestamp("verified_at"),
+  verifiedBy: varchar("verified_by").references(() => users.id),
+  rejectionReason: text("rejection_reason"),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+/**
+ * Snapshot of the official CNB (Conseil National des Barreaux) directory.
+ * Imported monthly from data.gouv.fr (licence Etalab 2.0).
+ *
+ *   https://www.data.gouv.fr/datasets/annuaire-des-avocats-de-france
+ *
+ * Used to verify lawyer signups against the official barreau registration.
+ */
+export const cnbDirectory = pgTable(
+  "cnb_directory",
+  {
+    id: serial("id").primaryKey(),
+    barreau: text("barreau").notNull(),
+    nom: text("nom").notNull(),
+    prenom: text("prenom").notNull(),
+    /** Normalized lowercase no-accent versions for fast matching. */
+    nomNormalized: text("nom_normalized").notNull(),
+    prenomNormalized: text("prenom_normalized").notNull(),
+    raisonSociale: text("raison_sociale"),
+    siren: varchar("siren", { length: 9 }),
+    adresse1: text("adresse_1"),
+    adresse2: text("adresse_2"),
+    codePostal: varchar("code_postal", { length: 5 }),
+    ville: text("ville"),
+    specialite1: text("specialite_1"),
+    specialite2: text("specialite_2"),
+    specialite3: text("specialite_3"),
+    specialite4: text("specialite_4"),
+    dateSerment: date("date_serment"),
+    langues: text("langues"),
+    /** Date of the CSV snapshot this row was imported from (yyyymmdd). */
+    sourceSnapshot: varchar("source_snapshot", { length: 8 }).notNull(),
+    importedAt: timestamp("imported_at").defaultNow(),
+  },
+  (t) => [
+    index("idx_cnb_match").on(t.barreau, t.nomNormalized, t.prenomNormalized),
+    index("idx_cnb_barreau").on(t.barreau),
+  ],
+);
 
 export const bookings = pgTable("bookings", {
   id: serial("id").primaryKey(),
@@ -155,6 +218,7 @@ export const insertProcedureSchema = createInsertSchema(procedures).omit({ id: t
 export const insertPractitionerSchema = createInsertSchema(practitioners).omit({ id: true, createdAt: true });
 export const insertBookingSchema = createInsertSchema(bookings).omit({ id: true, createdAt: true });
 export const insertDossierSchema = createInsertSchema(dossiers).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertCnbDirectorySchema = createInsertSchema(cnbDirectory).omit({ id: true, importedAt: true });
 
 // === EXPLICIT API CONTRACT TYPES ===
 export type { User, UpsertUser as InsertUser } from "./models/auth";
@@ -170,6 +234,9 @@ export type InsertBooking = z.infer<typeof insertBookingSchema>;
 
 export type Dossier = typeof dossiers.$inferSelect;
 export type InsertDossier = z.infer<typeof insertDossierSchema>;
+
+export type CnbDirectoryEntry = typeof cnbDirectory.$inferSelect;
+export type InsertCnbDirectoryEntry = z.infer<typeof insertCnbDirectorySchema>;
 
 // Request types
 export type CreateProcedureRequest = InsertProcedure;

@@ -16,7 +16,7 @@ const DG_MED_BLOCK: FicheStep = {
   title: "Mise en demeure amiable",
   blocks: [
     {
-      paragraphs: [
+      bullets: [
         "C'est quoi ? Une lettre envoyée avec accusé de réception pour demander la restitution du dépôt de garantie",
         "Préalable nécessaire avant toute action en justice",
         "Étape qui peut parfois suffire à résoudre le problème",
@@ -35,8 +35,8 @@ const DG_CONCILIATION: FicheStep = {
   blocks: [
     {
       paragraphs: [
-        "Obligatoire si le montant est < 5 000€. Facultatif si le montant est > 5 000€.",
         "Avant de saisir un juge, il existe 2 démarches amiables — article 750-1 du Code de procédure civile :",
+        "Obligatoire si le montant est < 5 000€. Facultatif si le montant est > 5 000€.",
         "**Conciliation :**",
       ],
       bullets: [
@@ -48,7 +48,7 @@ const DG_CONCILIATION: FicheStep = {
     {
       paragraphs: ["**Médiation :**"],
       bullets: [
-        "Payant",
+        "Payante",
         "Obligatoire en cas de clause de médiation prévue au contrat",
         "Liste des médiateurs dans l'annuaire des sites de cours d'appel",
         "Contact courrier ou sur leur site internet",

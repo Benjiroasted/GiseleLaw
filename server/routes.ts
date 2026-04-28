@@ -3,7 +3,9 @@ import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
-import { setupAuth, registerAuthRoutes } from "./replit_integrations/auth";
+import { setupAuth, registerAuthRoutes } from "./auth";
+import { registerLawyerRoutes } from "./routes-lawyers";
+import { registerAdminRoutes } from "./routes-admin";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -12,6 +14,8 @@ export async function registerRoutes(
   // Initialize Auth
   await setupAuth(app);
   registerAuthRoutes(app);
+  registerLawyerRoutes(app);
+  registerAdminRoutes(app);
 
   // === PROCEDURES API ===
 

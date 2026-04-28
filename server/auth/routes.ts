@@ -1,16 +1,12 @@
 import type { Express } from "express";
 import { authStorage } from "./storage";
 
-// Register auth-specific routes
 export function registerAuthRoutes(app: Express): void {
-  // Get current authenticated user
+  // Returns the currently authenticated user (or 401 if unauthenticated).
   app.get("/api/auth/user", async (req: any, res) => {
     try {
       const sessionUser = req.session?.user;
-      if (!sessionUser) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      const userId = sessionUser.id || sessionUser.claims?.sub;
+      const userId = sessionUser?.id ?? sessionUser?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -20,7 +16,7 @@ export function registerAuthRoutes(app: Express): void {
       }
       res.json(user);
     } catch (error) {
-      console.error("Error fetching user:", error);
+      console.error("[auth] Failed to fetch user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
     }
   });

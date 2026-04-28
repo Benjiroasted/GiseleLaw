@@ -10,6 +10,13 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Star, MapPin, User, Search } from "lucide-react";
 import { useState } from "react";
+import { Link } from "wouter";
+
+const DEMO_MARKER = "[DEMO_SEED]";
+function cleanBio(bio: string | null | undefined): string {
+  if (!bio) return "";
+  return bio.startsWith(DEMO_MARKER) ? bio.slice(DEMO_MARKER.length).trimStart() : bio;
+}
 
 export default function Practitioners() {
   const [specialty, setSpecialty] = useState<string>("all");
@@ -159,7 +166,7 @@ export default function Practitioners() {
                         </div>
                       </div>
                       <p className="text-sm text-muted-foreground line-clamp-2">
-                        {p.bio}
+                        {cleanBio(p.bio)}
                       </p>
                     </CardContent>
                     <CardFooter className="p-6 pt-0 border-t bg-muted/10 flex justify-between items-center">
@@ -167,9 +174,11 @@ export default function Practitioners() {
                         <span className="font-bold text-primary">{p.rateConsultation}€</span>
                         <span className="text-muted-foreground"> / consultation</span>
                       </div>
-                      <Button variant="default" className="bg-primary hover:bg-primary/90">
-                        Voir le profil
-                      </Button>
+                      <Link href={`/practitioners/${p.id}`}>
+                        <Button variant="default" className="bg-primary hover:bg-primary/90">
+                          Voir le profil
+                        </Button>
+                      </Link>
                     </CardFooter>
                   </Card>
                 ))}

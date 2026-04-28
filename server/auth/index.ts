@@ -1,14 +1,19 @@
 /**
- * Local development auth – mock strategy when REPL_ID is not set.
- * Use /api/login to auto-login as a dev user, or /api/logout to clear session.
+ * Auth — local session-based authentication.
+ *
+ * Single mock-user strategy for now: hitting `/api/login` signs you in as
+ * the dev user (id: `MOCK_USER_ID`, default `dev-user-local`). Replace with
+ * real email/password or OAuth when the platform exits the pilot.
  */
 import session from "express-session";
 import type { Express, RequestHandler } from "express";
 import connectPg from "connect-pg-simple";
 import MemoryStore from "memorystore";
 import { authStorage } from "./storage";
+import type { UserRole } from "@shared/models/auth";
 
 const MOCK_USER_ID = process.env.MOCK_USER_ID ?? "dev-user-local";
+const MOCK_USER_ROLE = (process.env.MOCK_USER_ROLE ?? "admin") as UserRole;
 const SESSION_TTL = 7 * 24 * 60 * 60 * 1000; // 1 week
 
 const mockUser = {
@@ -19,10 +24,10 @@ const mockUser = {
 export function getSession() {
   const secret = process.env.SESSION_SECRET;
   if (!secret) {
-    throw new Error("SESSION_SECRET is required. Add it to .env for local dev.");
+    throw new Error("SESSION_SECRET is required. Add it to .env.");
   }
 
-  // Use MemoryStore in dev when DATABASE_URL might not be set; otherwise PG
+  // PG store when DATABASE_URL is set, in-memory otherwise (tests, no-DB dev).
   const store = process.env.DATABASE_URL
     ? new (connectPg(session))({
         conString: process.env.DATABASE_URL,
@@ -46,11 +51,11 @@ export function getSession() {
 }
 
 export async function setupAuth(app: Express) {
-  console.log("[auth] Using local dev auth (REPL_ID not set). Visit /api/login to sign in as mock user.");
+  console.log("[auth] Visit /api/login to sign in as the mock dev user.");
   app.set("trust proxy", 1);
   app.use(getSession());
 
-  // Simple "passport-like" middleware: attach user from session
+  // Minimal passport-shaped helpers attached to the request.
   app.use((req, _res, next) => {
     (req as any).login = (user: any, cb: (err?: Error) => void) => {
       (req as any).session.user = user;
@@ -72,6 +77,7 @@ export async function setupAuth(app: Express) {
         email: "dev@local.test",
         firstName: "Dev",
         lastName: "User",
+        role: MOCK_USER_ROLE,
       });
     }
     (req as any).session.user = mockUser;
@@ -92,3 +98,6 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   (req as any).user = user;
   next();
 };
+
+export { authStorage, type IAuthStorage } from "./storage";
+export { registerAuthRoutes } from "./routes";

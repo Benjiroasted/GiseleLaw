@@ -4,6 +4,9 @@ dist/
 *.log
 .DS_Store
 
+# CNB directory CSV snapshots — regenerable from data.gouv.fr (cf. script/importCnbDirectory.ts)
+script/data/*.csv
+
 # Generated decision tree exports + their scripts
 decision-tree.csv
 decision-tree.drawio

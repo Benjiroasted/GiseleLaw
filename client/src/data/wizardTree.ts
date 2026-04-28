@@ -392,7 +392,6 @@ export const WIZARD_STEPS: WizardStep[] = [
   {
     id: "step_6b",
     question: "Votre problème concerne :",
-    contextLabel: "Hypothèse : L'accord n'est pas respecté ou ne se déroule pas comme prévu",
     options: [
       {
         label: "Je n'ai pas été payé(e)",
@@ -447,7 +446,6 @@ export const WIZARD_STEPS: WizardStep[] = [
   // ──────────── STEP 7 : Montant ────────────
   {
     id: "step_7",
-    contextLabel: "Hypothèse : Je n'ai pas été payé(e) = inexécution pour défaut de paiement",
     question: "Quel est le montant réclamé ?",
     options: [
       { label: "< 5 000€", value: "less_5000", chipLabel: "< 5 000€", next: "step_8" },

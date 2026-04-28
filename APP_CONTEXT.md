@@ -19,7 +19,7 @@ Quick reference for the stack, features, and how things work so an AI can help w
 - **Backend:** Node + Express 5, TypeScript, single server (API + static/Vite dev server).
 - **Frontend:** React 18, Vite 7, Wouter (routing), TanStack Query, Tailwind + Radix UI, Framer Motion.
 - **DB:** PostgreSQL with Drizzle ORM. Shared schema and API contract live in `shared/`.
-- **Auth:** Session-based. **Local dev:** `localAuth` (mock user via `/api/login`). **Replit:** `replitAuth` (OIDC). Chosen via `REPL_ID` env.
+- **Auth:** Session-based mock auth. `/api/login` signs in as the dev user (id: `dev-user-local`, override via `MOCK_USER_ID`). Replace with real email/password or OAuth before going to production.
 
 ---
 
@@ -31,7 +31,7 @@ Quick reference for the stack, features, and how things work so an AI can help w
 | `server/routes.ts` | Registers auth + all API routes (procedures, practitioners, dossiers) |
 | `server/storage.ts` | DB access (procedures, practitioners, dossiers, users) |
 | `server/vite.ts` | Vite dev middleware + catch-all for SPA |
-| `server/replit_integrations/auth/` | Auth: `index.ts` picks local vs Replit; `localAuth.ts` / `replitAuth.ts`; `routes.ts` (e.g. `/api/auth/user`); `storage.ts` (auth user storage) |
+| `server/auth/` | Auth: `index.ts` (mock session auth + `/api/login`/`/api/logout`), `routes.ts` (`/api/auth/user`), `storage.ts` (user upsert in DB) |
 | `shared/schema.ts` | Drizzle tables: procedures, practitioners, bookings, dossiers, users, sessions |
 | `shared/routes.ts` | API contract (paths, methods, Zod input/response schemas) |
 | `shared/models/auth.ts` | Users + sessions table definitions |

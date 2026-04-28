@@ -69,8 +69,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async listPractitioners(filters?: { specialty?: string; city?: string; acceptsLegalAid?: boolean }): Promise<Practitioner[]> {
-    let query = db.select().from(practitioners);
-    const conditions = [];
+    const query = db.select().from(practitioners);
+    // Only `verified` lawyers appear in the public directory.
+    const conditions = [eq(practitioners.verificationStatus, "verified")];
 
     if (filters?.specialty) {
       conditions.push(arrayContains(practitioners.specialties, [filters.specialty]));
@@ -84,11 +85,7 @@ export class DatabaseStorage implements IStorage {
       conditions.push(eq(practitioners.acceptsLegalAid, filters.acceptsLegalAid));
     }
 
-    if (conditions.length > 0) {
-      return await query.where(and(...conditions));
-    }
-
-    return await query;
+    return await query.where(and(...conditions));
   }
 
   async listDossiers(userId: string): Promise<Dossier[]> {

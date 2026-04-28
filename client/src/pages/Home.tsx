@@ -9,6 +9,7 @@ import {
   MessageCircleQuestion,
   ListChecks,
   FileSearch,
+  Briefcase,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Layout } from "@/components/Layout";
@@ -256,8 +257,58 @@ export default function Home() {
           </motion.div>
         </div>
 
+        {/* Bandeau "Vous êtes avocat ?" — entrée plateforme côté professionnel */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mt-24 rounded-3xl border border-border/60 bg-card overflow-hidden"
+        >
+          <div className="p-8 md:p-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="flex items-start gap-4 md:max-w-2xl">
+              <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Briefcase className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-2">
+                  Vous êtes avocat&nbsp;?
+                </p>
+                <h3 className="text-xl md:text-2xl font-serif font-bold text-primary mb-2">
+                  Recevez des demandes déjà qualifiées
+                </h3>
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                  Gisèle pré-qualifie les justiciables avec un questionnaire dédié.
+                  Vous recevez des dossiers structurés (situation, cadre légal, démarches
+                  déjà engagées) plutôt que des prises de contact à froid.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+              <Link href="/avocats">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="h-12 px-6 rounded-full"
+                >
+                  En savoir plus
+                </Button>
+              </Link>
+              <Link href="/avocats/inscription">
+                <Button
+                  size="lg"
+                  className="h-12 px-6 rounded-full bg-primary hover:bg-primary/90 text-white"
+                >
+                  Créer mon espace
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Trust/Disclaimer Section — updated messaging */}
-        <div className="mt-24 bg-primary/5 rounded-3xl p-8 md:p-12 text-center">
+        <div className="mt-16 bg-primary/5 rounded-3xl p-8 md:p-12 text-center">
           <Scale className="h-12 w-12 text-primary mx-auto mb-6 opacity-20" />
           <h2 className="text-2xl font-serif font-bold text-primary mb-4">
             Information juridique générale, pas de conseil personnalisé

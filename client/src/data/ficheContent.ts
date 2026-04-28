@@ -20,6 +20,8 @@ export interface FicheStepBlock {
 
 export interface FicheStep {
   title: string;
+  /** Smaller muted line shown below the title (e.g. legal reference, remark) */
+  subtitle?: string;
   blocks: FicheStepBlock[];
 }
 
@@ -53,7 +55,7 @@ const CADRE_LEGAL_VENTE = {
 };
 
 const MISE_EN_DEMEURE_BLOCK: FicheStepBlock = {
-  paragraphs: [
+  bullets: [
     "C'est quoi ? Une lettre envoyée avec accusé de réception pour demander le paiement",
     "Préalable nécessaire avant toute action en justice",
     "Étape qui peut parfois suffire à résoudre le problème",
@@ -80,7 +82,7 @@ const CONCILIATION_MEDIATION_OBLIGATOIRE: FicheStepBlock = {
 const MEDIATION_BLOCK: FicheStepBlock = {
   paragraphs: ["**Médiation :**"],
   bullets: [
-    "Payant",
+    "Payante",
     "Obligatoire en cas de clause de médiation prévue au contrat",
     "Liste des médiateurs dans l'annuaire des sites de cours d'appel",
     "Contact courrier ou sur leur site internet",
@@ -101,21 +103,18 @@ const SAISINE_DIRECTE: FicheStepBlock = {
 const PETITES_CREANCES: FicheStepBlock = {
   paragraphs: [
     "Si les démarches amiables échouent et que la dette est claire (montant précis, vente prouvée, paiement dû), une procédure simplifiée est possible :",
+  ],
+  bullets: [
     "Un commissaire de justice est désigné dans le ressort du tribunal judiciaire du lieu où habite celui qui doit l'argent.",
+    "Le commissaire invitera la personne devant de l'argent à participer à la procédure.",
+    "Si elle refuse ou ne répond pas dans le mois, une action devant le juge devient possible.",
+    "Coût approximatif : 45€ + frais de recouvrement.",
   ],
   link: {
     label: "Où s'adresser : commissaire-justice.fr",
     href: "https://www.commissaire-justice.fr",
     external: true,
   },
-};
-
-const PETITES_CREANCES_SUITE: FicheStepBlock = {
-  paragraphs: [
-    "Le commissaire invitera la personne devant de l'argent à participer à la procédure.",
-    "Si elle refuse ou ne répond pas dans le mois, une action devant le juge devient possible.",
-    "Coût approximatif : 45€ + frais de recouvrement.",
-  ],
 };
 
 const ACTION_JUGE_5ANS: FicheStepBlock = {
@@ -137,7 +136,6 @@ const ACTION_JUGE_5ANS_AVOCAT: FicheStepBlock = {
 
 const CONCILIATION_NON_OBLIGATOIRE: FicheStepBlock = {
   paragraphs: [
-    "**La conciliation et la médiation ne sont pas obligatoires** (le montant étant > 5 000€).",
     "Rappel si besoin :",
     "**Conciliation :**",
   ],
@@ -201,7 +199,7 @@ export const FICHE_1: FicheContent = {
     },
     {
       title: "Une procédure simplifiée de recouvrement des petites créances",
-      blocks: [PETITES_CREANCES, PETITES_CREANCES_SUITE],
+      blocks: [PETITES_CREANCES],
     },
     {
       title: "Action devant un juge",
@@ -225,7 +223,7 @@ export const FICHE_2: FicheContent = {
     },
     {
       title: "Une procédure simplifiée de recouvrement des petites créances",
-      blocks: [PETITES_CREANCES, PETITES_CREANCES_SUITE],
+      blocks: [PETITES_CREANCES],
     },
     {
       title: "Action devant un juge",
@@ -248,11 +246,13 @@ export const FICHE_3: FicheContent = {
       blocks: [MISE_EN_DEMEURE_BLOCK],
     },
     {
-      title: "La conciliation et la médiation ne sont pas obligatoires",
+      title: "Une tentative de conciliation ou de médiation",
+      subtitle: "Cette étape n'est pas obligatoire, le montant étant supérieur à 5 000 €.",
       blocks: [CONCILIATION_NON_OBLIGATOIRE, MEDIATION_BLOCK],
     },
     {
-      title: "Une injonction de payer (article 1405 du code de procédure civile)",
+      title: "Une injonction de payer",
+      subtitle: "Article 1405 du code de procédure civile",
       blocks: [INJONCTION_PAYER, INJONCTION_PROCEDURE, INJONCTION_A_SAVOIR],
     },
     {
@@ -272,11 +272,13 @@ export const FICHE_4: FicheContent = {
   ctaPractitionersHref: "/practitioners?specialty=Droit%20civil",
   steps: [
     {
-      title: "La conciliation et la médiation ne sont pas obligatoires",
+      title: "Une tentative de conciliation ou de médiation",
+      subtitle: "Cette étape n'est pas obligatoire, le montant étant supérieur à 5 000 €.",
       blocks: [CONCILIATION_NON_OBLIGATOIRE, MEDIATION_BLOCK],
     },
     {
-      title: "Une injonction de payer (article 1405 du code de procédure civile)",
+      title: "Une injonction de payer",
+      subtitle: "Article 1405 du code de procédure civile",
       blocks: [INJONCTION_PAYER, INJONCTION_PROCEDURE, INJONCTION_A_SAVOIR],
     },
     {

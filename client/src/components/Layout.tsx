@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Scale, LogOut, Moon, Sun, User as UserIcon } from "lucide-react";
+import { Scale, LogOut, Moon, Sun, User as UserIcon, Briefcase, UserCircle2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useState, useEffect } from "react";
 import {
@@ -114,14 +114,43 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border hover:bg-muted transition-colors text-sm">
                     <UserIcon className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground hidden sm:inline">Invité</span>
+                    <span className="text-muted-foreground hidden sm:inline">Se connecter</span>
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Pas encore de compte</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+                <DropdownMenuContent align="end" className="w-64">
+                  <DropdownMenuLabel className="text-xs uppercase tracking-wider text-muted-foreground">
+                    Espace client
+                  </DropdownMenuLabel>
                   <DropdownMenuItem asChild className="cursor-pointer">
-                    <a href="/api/login">Se connecter (dev)</a>
+                    <a href="/api/login" className="flex items-center gap-2">
+                      <UserCircle2 className="h-4 w-4 text-muted-foreground" />
+                      <div className="flex flex-col">
+                        <span>Particulier / TPE</span>
+                        <span className="text-xs text-muted-foreground">
+                          Suivre mes dossiers
+                        </span>
+                      </div>
+                    </a>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel className="text-xs uppercase tracking-wider text-muted-foreground">
+                    Espace avocat
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link href="/avocats" className="flex items-center gap-2">
+                      <Briefcase className="h-4 w-4 text-muted-foreground" />
+                      <div className="flex flex-col">
+                        <span>En savoir plus</span>
+                        <span className="text-xs text-muted-foreground">
+                          Pour les professionnels du droit
+                        </span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link href="/avocats/inscription" className="text-primary font-medium">
+                      Créer mon espace avocat →
+                    </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
