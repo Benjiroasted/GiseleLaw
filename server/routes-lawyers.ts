@@ -145,6 +145,9 @@ export function registerLawyerRoutes(app: Express): void {
           bio: input.bio || null,
           cnbMatchId,
           verificationStatus: "pending_review",
+          proCardFileData: input.proCardFile.dataUrl,
+          proCardFileName: input.proCardFile.name,
+          proCardFileType: input.proCardFile.type,
           // sane defaults — the rest is filled during onboarding after approval
           rating: "0.0",
           experienceYears: 0,

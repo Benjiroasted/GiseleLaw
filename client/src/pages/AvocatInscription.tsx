@@ -9,6 +9,9 @@ import {
   ShieldCheck,
   ChevronsUpDown,
   Check,
+  Upload,
+  FileText,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,6 +53,33 @@ interface ApplyResponse {
   cnbMatched: boolean;
 }
 
+interface ProCardFile {
+  name: string;
+  type: string;
+  /** dataUrl: "data:<mime>;base64,<payload>" */
+  dataUrl: string;
+  /** Raw size in bytes (for UI display). */
+  size: number;
+}
+
+const PRO_CARD_ACCEPT = "image/png,image/jpeg,image/webp,image/heic,image/heif,application/pdf";
+const PRO_CARD_MAX_BYTES = 4 * 1024 * 1024; // 4MB raw → ~5.5MB once base64-encoded
+
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} o`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} ko`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
+}
+
 export default function AvocatInscription() {
   const { toast } = useToast();
   const [step, setStep] = useState<"form" | "submitted">("form");
@@ -63,9 +93,39 @@ export default function AvocatInscription() {
   const [locationCity, setLocationCity] = useState("");
   const [bio, setBio] = useState("");
   const [specialties, setSpecialties] = useState<string[]>([]);
+  const [proCardFile, setProCardFile] = useState<ProCardFile | null>(null);
+  const [proCardError, setProCardError] = useState<string | null>(null);
+
+  const handleProCardChange = async (file: File | null) => {
+    setProCardError(null);
+    if (!file) {
+      setProCardFile(null);
+      return;
+    }
+    if (file.size > PRO_CARD_MAX_BYTES) {
+      setProCardError("Fichier trop volumineux (4 Mo max).");
+      return;
+    }
+    if (!/^(image\/(png|jpe?g|webp|heic|heif)|application\/pdf)$/i.test(file.type)) {
+      setProCardError("Format non supporté. Utilisez un PDF ou une image (JPG, PNG, WEBP, HEIC).");
+      return;
+    }
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      setProCardFile({
+        name: file.name,
+        type: file.type,
+        dataUrl,
+        size: file.size,
+      });
+    } catch {
+      setProCardError("Impossible de lire ce fichier. Réessayez.");
+    }
+  };
 
   useEffect(() => {
     document.title = "Inscription avocat — Gisèle.law";
+    window.scrollTo({ top: 0, behavior: "auto" });
   }, []);
 
   // Load barreaux from CNB directory (used to populate the dropdown).
@@ -84,6 +144,9 @@ export default function AvocatInscription() {
 
   const submitMutation = useMutation({
     mutationFn: async (): Promise<ApplyResponse> => {
+      if (!proCardFile) {
+        throw new Error("Carte professionnelle requise");
+      }
       const res = await apiRequest("POST", "/api/lawyers/apply", {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
@@ -93,6 +156,11 @@ export default function AvocatInscription() {
         specialties,
         locationCity: locationCity.trim(),
         bio: bio.trim(),
+        proCardFile: {
+          name: proCardFile.name,
+          type: proCardFile.type,
+          dataUrl: proCardFile.dataUrl,
+        },
       });
       return res.json();
     },
@@ -112,7 +180,8 @@ export default function AvocatInscription() {
     firstName.trim().length >= 2 &&
     lastName.trim().length >= 2 &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
-    barreau.trim().length > 0;
+    barreau.trim().length > 0 &&
+    proCardFile !== null;
 
   if (step === "submitted") {
     return (
@@ -344,6 +413,69 @@ export default function AvocatInscription() {
             </div>
           </div>
 
+          <div className="border-t pt-6 space-y-3">
+            <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+              <ShieldCheck className="h-4 w-4" />
+              Justificatif professionnel
+            </div>
+            <div>
+              <Label htmlFor="proCardFile">Copie de votre carte professionnelle *</Label>
+              <p className="text-xs text-muted-foreground mt-1 mb-3">
+                Document délivré par le CNB ou la CNBF. PDF ou image (JPG, PNG, WEBP, HEIC), 4&nbsp;Mo max.
+              </p>
+
+              {!proCardFile ? (
+                <label
+                  htmlFor="proCardFile"
+                  className="flex flex-col items-center justify-center gap-2 w-full p-6 rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-muted/50 cursor-pointer transition-colors"
+                >
+                  <Upload className="h-6 w-6 text-muted-foreground" />
+                  <span className="text-sm font-medium text-primary">
+                    Sélectionner un fichier
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    ou glissez-déposez ici
+                  </span>
+                  <input
+                    id="proCardFile"
+                    type="file"
+                    accept={PRO_CARD_ACCEPT}
+                    className="sr-only"
+                    onChange={(e) =>
+                      handleProCardChange(e.target.files?.[0] ?? null)
+                    }
+                  />
+                </label>
+              ) : (
+                <div className="flex items-center gap-3 p-4 rounded-xl border bg-muted/40">
+                  <div className="shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <FileText className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-primary truncate">
+                      {proCardFile.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatBytes(proCardFile.size)}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleProCardChange(null)}
+                    className="shrink-0 p-2 rounded-lg hover:bg-background text-muted-foreground hover:text-destructive transition-colors"
+                    aria-label="Retirer le fichier"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+
+              {proCardError && (
+                <p className="text-xs text-destructive mt-2">{proCardError}</p>
+              )}
+            </div>
+          </div>
+
           <Button
             type="submit"
             size="lg"
@@ -356,7 +488,7 @@ export default function AvocatInscription() {
                 Envoi en cours…
               </>
             ) : (
-              "Envoyer ma candidature"
+              "S'inscrire"
             )}
           </Button>
 

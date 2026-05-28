@@ -1,0 +1,360 @@
+================================================================================
+  CONTEXTE DE CONVERSATION — Projet Gisèle.law
+  Conversation entre l'utilisateur (Benjamin) et un agent Cursor
+  Période : avril → mai 2026
+================================================================================
+
+À UTILISER COMME CONTEXTE POUR UN AUTRE LLM
+-------------------------------------------
+Ce document résume l'état du projet, les choix techniques en place, et les
+modifications effectuées au cours de cette conversation. Il est conçu pour
+être collé en début de conversation à un autre assistant IA afin qu'il
+reprenne le travail en gardant la cohérence.
+
+
+================================================================================
+  1. APERÇU DU PROJET
+================================================================================
+
+Nom : Gisèle.law
+Pitch : Plateforme web qui simplifie les démarches juridiques en France.
+        L'utilisateur (justiciable) répond à un questionnaire qui qualifie sa
+        situation, reçoit une synthèse du cadre légal applicable et des
+        démarches à suivre, et peut être mis en relation avec un avocat.
+        Côté pro, les avocats reçoivent des dossiers déjà structurés.
+
+Stack technique :
+  - Frontend : React 18 + Vite, TypeScript, TailwindCSS, shadcn/ui
+                (Radix primitives), framer-motion, wouter (router),
+                @tanstack/react-query
+  - Backend  : Node.js + Express 5, TypeScript (tsx), drizzle-orm + pg
+                (PostgreSQL), zod pour la validation
+  - DB       : PostgreSQL (drizzle-kit push pour les migrations)
+  - Auth     : express-session + connect-pg-simple (pas de provider OAuth
+                au moment de la conversation)
+  - Build    : esbuild pour le serveur, vite pour le client
+
+Arborescence principale :
+  client/
+    src/
+      pages/         (Home.tsx, AvocatsLanding.tsx, AvocatInscription.tsx,
+                      et autres pages procédure)
+      components/    (Layout.tsx + tous les composants shadcn/ui)
+      hooks/         (use-toast, etc.)
+      lib/           (queryClient.ts, utils.ts)
+  server/
+    index.ts             (entrée Express, middlewares, body limit)
+    routes-lawyers.ts    (endpoints CNB + apply)
+    db.ts                (connexion drizzle)
+    + autres route files (routes-procedures, routes-admin, etc.)
+  shared/
+    schema.ts            (drizzle tables : users, practitioners,
+                          cnbDirectory, procedures, dossiers...)
+    routes.ts            (zod schemas + api contract partagés
+                          client/serveur)
+  script/
+    importCnbDirectory.ts (import du dump CNB de data.gouv.fr)
+    seedDemoPractitioners.ts (avocats fictifs pour la démo)
+
+Commandes utiles :
+  npm run dev               → lance Vite + Express en dev
+  npm run db:push           → drizzle-kit push (sync schéma → DB)
+  npm run db:push -- --force → force push (a été utilisé pour les nouvelles
+                               colonnes proCard*)
+  npm run seed:demo-lawyers → seed des avocats de démo
+  npm run import:cnb        → import partiel du CNB
+  npm run import:cnb:full   → import complet
+
+
+================================================================================
+  2. ENTITÉS DOMAINE PRINCIPALES
+================================================================================
+
+TABLE practitioners (avocats)
+  Colonnes principales :
+    id, userId, name, photoUrl, bio, specialties[], locationCity,
+    locationDepartment, experienceYears, rateConsultation, rateHourly,
+    acceptsLegalAid, similarCasesTravail, similarCasesIp, rating
+  Colonnes de signup / vérification :
+    email, phone, barreau (CNB), cnbMatchId (FK vers cnbDirectory),
+    verificationStatus ("pending_review" | "verified" | "rejected"),
+    verifiedAt, verifiedBy, rejectionReason
+  Colonnes AJOUTÉES dans cette conversation :
+    proCardFileData (text, base64 dataURL de la carte pro),
+    proCardFileName (text), proCardFileType (text)
+  createdAt
+
+TABLE cnbDirectory
+  Snapshot mensuel de l'annuaire officiel CNB
+  (https://www.data.gouv.fr/datasets/annuaire-des-avocats-de-france)
+  Utilisé pour la vérification a posteriori des inscriptions avocats.
+  Champs : id, barreau, nom, prenom, nomNormalized, prenomNormalized,
+           villeExercice, etc.
+
+API publique côté avocats (server/routes-lawyers.ts) :
+  GET  /api/cnb/barreaux         → liste distincte des barreaux
+  GET  /api/cnb/match            → match (firstName, lastName, barreau)
+                                    contre le CNB (utilisé en admin uniquement)
+  POST /api/lawyers/apply        → crée un practitioner en pending_review
+
+
+================================================================================
+  3. MODIFICATIONS EFFECTUÉES DURANT LA CONVERSATION
+================================================================================
+
+Toutes les modifications sont en français côté UI et en anglais côté commentaires
+de code (convention du projet). Le ton est sobre, juridique, professionnel.
+
+────────────────────────────────────────────────────────────────────────────────
+  3.1  Page d'accueil (client/src/pages/Home.tsx)
+       Refonte du module "Comment ça marche ?"
+────────────────────────────────────────────────────────────────────────────────
+
+Avant : un seul bloc "Comment ça marche ?" avec 3 étapes en grille
+        (md:grid-cols-3), focalisé uniquement côté justiciable.
+        Un bandeau "Vous êtes avocat ?" séparé en bas de page.
+
+Après : module unifié sous le titre "Comment ça marche ?" contenant
+        DEUX BLOCS CÔTE À CÔTE :
+
+  Bloc 1 — "Pour les particuliers ou les entreprises"
+    - bg-card neutre, bordure border-border/60
+    - 3 étapes empilées verticalement à l'intérieur (flex flex-col gap-4) :
+        Étape 1 : Décrivez votre situation       (MessageCircleQuestion)
+        Étape 2 : Recevez votre feuille de route (ListChecks)
+        Étape 3 : Agissez ou trouvez un avocat   (FileSearch)
+    - CTA pleine largeur : "Commencer le questionnaire"
+      → href="/procedure/new/wizard"
+
+  Bloc 2 — "Pour les avocats"
+    - bg-accent/5, bordure border-2 border-accent/30 (distinction visuelle)
+    - icônes des étapes en couleur d'accent (jaune doré)
+    - 3 étapes empilées verticalement :
+        Étape 1 : Le justiciable qualifie son dossier  (ClipboardList)
+        Étape 2 : Vous recevez les dossiers pertinents (Inbox)
+        Étape 3 : Vous prenez contact en un clic       (Handshake)
+    - Deux CTAs côte à côte :
+        "En savoir plus" (outline)  → /avocats
+        "Créer mon espace"          → /avocats/inscription
+
+  Layout : grid md:grid-cols-2 gap-6 items-stretch
+  Hauteur uniforme entre les deux blocs via flex flex-col h-full + mt-auto
+  sur les CTAs (CTAs alignés en bas même si les textes diffèrent).
+
+  Le bandeau séparé "Vous êtes avocat ?" plus bas dans la page a été
+  SUPPRIMÉ car redondant avec le nouveau bloc 2.
+
+  Le sous-titre du module a été reformulé :
+    « Gisèle connecte deux mondes : les justiciables qui cherchent à
+      comprendre leurs droits, et les avocats qui reçoivent des dossiers
+      déjà qualifiés. Découvrez les deux parcours. »
+
+  Itérations de wording demandées par l'utilisateur :
+    "Pour vous" + "Particuliers & entreprises" (en 2 lignes)
+      → finalisé en : "Pour les particuliers ou les entreprises" (1 ligne, h3)
+    "Pour les professionnels" + "Avocats & cabinets" (en 2 lignes)
+      → finalisé en : "Pour les avocats" (1 ligne, h3)
+    Suppression des petites icônes carrées (Users, Briefcase) à côté
+    des titres des blocs.
+
+  Imports lucide-react ajoutés/retirés :
+    + ClipboardList, Inbox, Handshake (étapes côté avocats)
+    − Briefcase (n'est plus utilisé après nettoyage)
+
+
+────────────────────────────────────────────────────────────────────────────────
+  3.2  Scroll-to-top sur navigation vers les pages avocats
+────────────────────────────────────────────────────────────────────────────────
+
+Constat : wouter ne réinitialise pas la position de scroll lors d'un
+          changement de route. Les boutons "En savoir plus" et "Créer mon
+          espace" amenaient l'utilisateur quelque part en milieu de page.
+
+Fix : dans le useEffect de mount des deux pages cibles, ajout de
+      window.scrollTo({ top: 0, behavior: "auto" })
+
+  client/src/pages/AvocatsLanding.tsx
+    useEffect(() => {
+      document.title = "Gisèle.law — Espace avocats";
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }, []);
+
+  client/src/pages/AvocatInscription.tsx
+    useEffect(() => {
+      document.title = "Inscription avocat — Gisèle.law";
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }, []);
+
+Pourquoi behavior:"auto" et pas "smooth" : sur un changement de route,
+un saut instantané est l'UX standard (smooth ferait un retour visuel
+étrange après le mount).
+
+
+────────────────────────────────────────────────────────────────────────────────
+  3.3  Page inscription avocat — texte du bouton de soumission
+────────────────────────────────────────────────────────────────────────────────
+
+client/src/pages/AvocatInscription.tsx
+  "Envoyer ma candidature"   →   "S'inscrire"
+
+(Cohérence avec le CTA "Créer mon espace" en amont sur la home.)
+
+
+────────────────────────────────────────────────────────────────────────────────
+  3.4  Upload de la carte professionnelle (champ requis)
+────────────────────────────────────────────────────────────────────────────────
+
+Demande : ajouter un upload de copie de carte professionnelle dans le
+          formulaire d'inscription avocat.
+
+Approche retenue : stockage en base64 (dataURL) dans Postgres, pas de
+                   stockage objet/disque pour rester sur l'infra existante.
+                   Justification : pas d'infra S3/CDN encore, volume faible
+                   (un fichier par inscription, modération admin manuelle).
+
+Implémentation complète, de bout en bout :
+
+(a) Schéma DB — shared/schema.ts
+    Ajout de 3 colonnes nullable sur practitioners :
+      proCardFileData: text("pro_card_file_data")
+      proCardFileName: text("pro_card_file_name")
+      proCardFileType: text("pro_card_file_type")
+    Migration appliquée via : npm run db:push -- --force
+
+(b) Schéma Zod partagé — shared/routes.ts
+    Nouveau sous-schema :
+      const PRO_CARD_MIME_RE =
+        /^(image\/(png|jpe?g|webp|heic|heif)|application\/pdf)$/i;
+      const PRO_CARD_MAX_BASE64_LENGTH = 6 * 1024 * 1024;  // ~6MB encodé
+
+      const proCardFileSchema = z.object({
+        name:    z.string().min(1).max(255),
+        type:    z.string().regex(PRO_CARD_MIME_RE, '...'),
+        dataUrl: z.string()
+                  .startsWith('data:', '...')
+                  .max(PRO_CARD_MAX_BASE64_LENGTH, '...'),
+      });
+
+    Ajout du champ requis au lawyerApplicationSchema :
+      proCardFile: proCardFileSchema
+
+(c) Limite Express bumpée — server/index.ts
+    express.json({ limit: "10mb", verify: ... })
+    express.urlencoded({ extended: false, limit: "10mb" })
+    (avant : défaut 100kb, trop petit pour un fichier base64)
+
+(d) Persistance — server/routes-lawyers.ts (POST /api/lawyers/apply)
+    Insertion des 3 nouvelles colonnes :
+      proCardFileData: input.proCardFile.dataUrl,
+      proCardFileName: input.proCardFile.name,
+      proCardFileType: input.proCardFile.type,
+
+(e) UI — client/src/pages/AvocatInscription.tsx
+    Helpers ajoutés au top du fichier :
+      - interface ProCardFile { name, type, dataUrl, size }
+      - PRO_CARD_ACCEPT (string MIME list)
+      - PRO_CARD_MAX_BYTES = 4 * 1024 * 1024  (raw, 4MB → ~5.5MB base64)
+      - readFileAsDataUrl(file): Promise<string> via FileReader
+      - formatBytes(bytes): string  (o / ko / Mo français)
+
+    État ajouté dans le composant :
+      const [proCardFile, setProCardFile] = useState<ProCardFile | null>(null);
+      const [proCardError, setProCardError] = useState<string | null>(null);
+
+    handleProCardChange(file) : valide MIME + taille, encode via FileReader,
+    set state ou error. Acceptés : PDF, PNG, JPG, WEBP, HEIC/HEIF.
+
+    isFormValid inclut désormais proCardFile !== null.
+
+    Mutation : envoie proCardFile { name, type, dataUrl } dans le body
+    JSON de POST /api/lawyers/apply.
+
+    Bloc UI dans le formulaire (juste avant le bouton submit) :
+      Section "Justificatif professionnel" (icône ShieldCheck)
+        - État vide : zone de drop pointillée (border-dashed) avec
+                       icône Upload, label "Sélectionner un fichier",
+                       sous-label "ou glissez-déposez ici", input
+                       file caché (sr-only)
+        - État rempli : carte d'aperçu avec icône FileText, nom du
+                         fichier (truncate), taille formatée, bouton X
+                         pour retirer
+        - Erreur : <p> text-destructive sous le champ
+
+    Le bouton "S'inscrire" reste disabled tant qu'aucun fichier valide
+    n'est sélectionné.
+
+
+================================================================================
+  4. CONVENTIONS DE CODE OBSERVÉES DANS LE PROJET
+================================================================================
+
+- TypeScript strict, pas de any.
+- Tailwind exclusivement pour le style ; pas de CSS module.
+- Variants de Button : default, outline, secondary, ghost, destructive, link.
+- Couleurs sémantiques : primary (bleu marine), accent (or), muted-foreground,
+  destructive, background, card, border.
+- Composants shadcn/ui dans client/src/components/ui/.
+- Le routing utilise wouter <Link href="..."> (pas next/link, pas react-router).
+- Les requêtes serveur passent par apiRequest(method, path, body) de
+  client/src/lib/queryClient.ts.
+- Les mutations utilisent useMutation de @tanstack/react-query avec
+  onSuccess / onError + toast pour les erreurs (useToast()).
+- Côté serveur, toutes les routes valident l'input avec zod.parse(...) et
+  retournent {message, field?} sur 400/409, {message} sur 500.
+- Les commentaires de code expliquent l'intention/contraintes, pas le
+  fonctionnement évident (pas de "// Increment counter").
+- Pas d'emojis dans le code ni dans les libellés UI.
+- Wording UI en français, neutre et juridique.
+
+
+================================================================================
+  5. ÉTAT GIT AU MOMENT DE L'EXPORT
+================================================================================
+
+Au début de la conversation, le repo avait deux fichiers modifiés non
+commités :
+  M client/src/pages/AvocatsLanding.tsx
+  M client/src/pages/Home.tsx
+
+Pas de remote configuré (à vérifier au moment de la lecture). L'utilisateur
+souhaite à présent pousser le projet entier sur GitHub pour pouvoir le
+récupérer depuis un autre outil.
+
+Aucun commit n'a été créé par l'agent au cours de cette conversation
+(politique : on ne commit que sur demande explicite).
+
+
+================================================================================
+  6. POINTS D'ATTENTION POUR LA SUITE
+================================================================================
+
+- Le stockage de la carte pro en base64 dans Postgres est OK pour la phase
+  pilote mais devrait être migré vers un object store (S3, R2, ou équivalent)
+  dès qu'on dépasse quelques dizaines d'inscriptions. Penser à :
+    (1) garder une migration de sortie : copier proCardFileData → URL stockage
+    (2) servir le fichier via une route protégée admin uniquement
+        (le base64 actuel ne doit JAMAIS être renvoyé dans une route
+        publique listant les practitioners).
+
+- Le scope admin de modération (verification dashboard) n'a pas été touché
+  dans cette conversation. Vérifier que l'UI admin sait afficher le
+  proCardFile (data URL → <img> ou <iframe> selon type) pour validation.
+
+- La vérification CNB côté inscription est volontairement DÉSACTIVÉE côté
+  client (le commentaire dans routes-lawyers.ts explique pourquoi : afficher
+  un statut "matched/not matched" pendant le signup permettrait d'usurper
+  facilement l'identité d'un avocat existant). La vérification est faite
+  par un admin a posteriori.
+
+- Les pages Home/AvocatsLanding/AvocatInscription utilisent du framer-motion ;
+  garder la cohérence des durations/delays (~0.4s, stagger 0.05-0.1s) sur
+  les futurs ajouts.
+
+- L'utilisateur n'est pas développeur de formation ; préférer les
+  explications avec un peu de pédagogie, en français, et confirmer les
+  petites décisions UX/wording avant d'écrire du code.
+
+
+================================================================================
+  FIN DU RÉSUMÉ
+================================================================================

@@ -105,6 +105,10 @@ export const practitioners = pgTable("practitioners", {
   verifiedAt: timestamp("verified_at"),
   verifiedBy: varchar("verified_by").references(() => users.id),
   rejectionReason: text("rejection_reason"),
+  /** Copy of the professional card uploaded at signup, base64 dataUrl */
+  proCardFileData: text("pro_card_file_data"),
+  proCardFileName: text("pro_card_file_name"),
+  proCardFileType: text("pro_card_file_type"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

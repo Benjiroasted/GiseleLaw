@@ -15,13 +15,17 @@ declare module "http" {
 
 app.use(
   express.json({
+    // Lawyer signup ships the carte pro as a base64 dataUrl in JSON,
+    // so we allow up to ~10MB to comfortably fit a 6MB encoded file
+    // plus the rest of the application payload.
+    limit: "10mb",
     verify: (req, _res, buf) => {
       req.rawBody = buf;
     },
   }),
 );
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false, limit: "10mb" }));
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {

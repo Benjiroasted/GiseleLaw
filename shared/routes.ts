@@ -27,6 +27,24 @@ export const errorSchemas = {
 // ============================================
 // LAWYER APPLICATION SCHEMA
 // ============================================
+/**
+ * Accepted file types for the professional card (carte CNBF / CNB).
+ * We allow images and PDF, capped at ~6MB after base64 inflation
+ * (≈ 4.5MB raw on disk).
+ */
+const PRO_CARD_MIME_RE = /^(image\/(png|jpe?g|webp|heic|heif)|application\/pdf)$/i;
+const PRO_CARD_MAX_BASE64_LENGTH = 6 * 1024 * 1024; // ~6MB encoded
+
+const proCardFileSchema = z.object({
+  name: z.string().min(1).max(255),
+  type: z.string().regex(PRO_CARD_MIME_RE, 'Format non supporté (PDF ou image attendu)'),
+  /** dataUrl: "data:<mime>;base64,<payload>" */
+  dataUrl: z
+    .string()
+    .startsWith('data:', 'Fichier invalide')
+    .max(PRO_CARD_MAX_BASE64_LENGTH, 'Fichier trop volumineux (6 Mo max)'),
+});
+
 export const lawyerApplicationSchema = z.object({
   firstName: z.string().min(1, 'Prénom requis').max(100),
   lastName: z.string().min(1, 'Nom requis').max(100),
@@ -37,6 +55,7 @@ export const lawyerApplicationSchema = z.object({
   locationCity: z.string().max(100).optional().or(z.literal('')),
   bio: z.string().max(2000).optional().or(z.literal('')),
   cnbMatchId: z.number().int().positive().optional().nullable(),
+  proCardFile: proCardFileSchema,
 });
 
 export type LawyerApplicationInput = z.infer<typeof lawyerApplicationSchema>;

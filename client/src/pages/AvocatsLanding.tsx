@@ -7,7 +7,6 @@ import {
   ShieldCheck,
   FileSearch,
   CheckCircle2,
-  Sparkles,
   Users,
   ClipboardList,
   Inbox,
@@ -20,8 +19,6 @@ import { Layout } from "@/components/Layout";
 interface PricingTier {
   name: string;
   tagline: string;
-  price: string;
-  priceUnit?: string;
   ctaLabel: string;
   ctaHref: string;
   features: string[];
@@ -33,8 +30,6 @@ const PRICING_TIERS: PricingTier[] = [
   {
     name: "Découverte",
     tagline: "Pour tester la plateforme",
-    price: "0\u00a0€",
-    priceUnit: "Gratuit pendant la phase pilote",
     ctaLabel: "Créer mon espace",
     ctaHref: "/avocats/inscription",
     features: [
@@ -48,8 +43,6 @@ const PRICING_TIERS: PricingTier[] = [
   {
     name: "Cabinet",
     tagline: "Pour les avocats en exercice individuel",
-    price: "49\u00a0€",
-    priceUnit: "/ avocat / mois HT",
     ctaLabel: "Bientôt disponible",
     ctaHref: "/avocats/inscription",
     features: [
@@ -63,8 +56,6 @@ const PRICING_TIERS: PricingTier[] = [
   {
     name: "Premium",
     tagline: "Pour développer votre clientèle",
-    price: "99\u00a0€",
-    priceUnit: "/ avocat / mois HT",
     ctaLabel: "Bientôt disponible",
     ctaHref: "/avocats/inscription",
     badge: "Recommandé",
@@ -80,8 +71,6 @@ const PRICING_TIERS: PricingTier[] = [
   {
     name: "Enterprise",
     tagline: "Pour les cabinets multi-avocats",
-    price: "Sur devis",
-    priceUnit: "À partir de 5 collaborateurs",
     ctaLabel: "Nous contacter",
     ctaHref: "mailto:contact@gisele.law?subject=Plan%20Enterprise",
     features: [
@@ -115,6 +104,7 @@ const HOW_IT_WORKS = [
 export default function AvocatsLanding() {
   useEffect(() => {
     document.title = "Gisèle.law — Espace avocats";
+    window.scrollTo({ top: 0, behavior: "auto" });
   }, []);
 
   return (
@@ -150,7 +140,7 @@ export default function AvocatsLanding() {
         <section className="mb-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-primary mb-4">
-              Comment ça marche
+              Comment ça marche&nbsp;?
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Trois étapes, du questionnaire client à la mise en relation. Vous
@@ -166,17 +156,16 @@ export default function AvocatsLanding() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="relative bg-card border border-border/60 rounded-2xl p-6"
+                className="bg-card border border-border/60 rounded-2xl p-6"
               >
-                <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center shadow-md">
-                  {i + 1}
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="shrink-0 w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <step.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-serif font-bold text-primary leading-tight">
+                    {step.title}
+                  </h3>
                 </div>
-                <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                  <step.icon className="h-5 w-5 text-primary" />
-                </div>
-                <h3 className="text-lg font-serif font-bold text-primary mb-2">
-                  {step.title}
-                </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {step.text}
                 </p>
@@ -191,10 +180,6 @@ export default function AvocatsLanding() {
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-primary mb-4">
               Choisissez votre formule
             </h2>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent font-medium text-sm">
-              <Sparkles className="h-4 w-4" />
-              Tous les plans sont gratuits pendant la phase pilote
-            </div>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -214,49 +199,38 @@ export default function AvocatsLanding() {
 
         {/* ── Trust strip ─────────────────────────────────────────────── */}
         <div className="bg-primary/5 rounded-3xl p-8 md:p-12 mb-12">
-          <div className="grid md:grid-cols-3 gap-6 text-center md:text-left">
-            <div className="flex md:items-start gap-4 flex-col md:flex-row items-center">
-              <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <ShieldCheck className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h4 className="font-serif font-bold text-primary mb-1">
-                  Vérification CNB
-                </h4>
-                <p className="text-sm text-muted-foreground">
-                  Chaque inscription est croisée avec l'annuaire officiel du
-                  Conseil National des Barreaux.
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: ShieldCheck,
+                title: "Vérification CNB",
+                text: "Chaque inscription est croisée avec l'annuaire officiel du Conseil National des Barreaux.",
+              },
+              {
+                icon: FileSearch,
+                title: "Dossiers structurés",
+                text: "Vous recevez la situation, le cadre légal et les démarches déjà engagées — pas de demandes vagues.",
+              },
+              {
+                icon: Users,
+                title: "Mise en relation ciblée",
+                text: "Filtrage par spécialité, ville et aide juridictionnelle pour des prospects pertinents.",
+              },
+            ].map(({ icon: Icon, title, text }) => (
+              <div key={title}>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <Icon className="h-6 w-6 text-primary" />
+                  </div>
+                  <h4 className="font-serif font-bold text-primary leading-tight">
+                    {title}
+                  </h4>
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {text}
                 </p>
               </div>
-            </div>
-            <div className="flex md:items-start gap-4 flex-col md:flex-row items-center">
-              <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <FileSearch className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h4 className="font-serif font-bold text-primary mb-1">
-                  Dossiers structurés
-                </h4>
-                <p className="text-sm text-muted-foreground">
-                  Vous recevez la situation, le cadre légal et les démarches
-                  déjà engagées — pas de demandes vagues.
-                </p>
-              </div>
-            </div>
-            <div className="flex md:items-start gap-4 flex-col md:flex-row items-center">
-              <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Users className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h4 className="font-serif font-bold text-primary mb-1">
-                  Mise en relation ciblée
-                </h4>
-                <p className="text-sm text-muted-foreground">
-                  Filtrage par spécialité, ville et aide juridictionnelle pour
-                  des prospects pertinents.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -301,23 +275,13 @@ function PricingCard({ tier }: { tier: PricingTier }) {
           {tier.badge}
         </div>
       )}
-      <div className="mb-4">
+      <div className="mb-5">
         <h3 className="font-serif font-bold text-primary text-xl mb-1">
           {tier.name}
         </h3>
         <p className="text-xs text-muted-foreground min-h-[2.5em]">
           {tier.tagline}
         </p>
-      </div>
-      <div className="mb-5">
-        <div className="font-bold text-primary text-3xl leading-none">
-          {tier.price}
-        </div>
-        {tier.priceUnit && (
-          <div className="text-xs text-muted-foreground mt-1">
-            {tier.priceUnit}
-          </div>
-        )}
       </div>
       <ul className="space-y-2 mb-6 flex-1">
         {tier.features.map((feat) => (
