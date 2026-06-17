@@ -91,6 +91,19 @@ const STEP_ID_TO_ANSWER_KEY: Record<string, string> = {
   emp_motif: "empMotif",
   emp_type_faute: "empTypeFaute",
   emp_procedure: "empProcedure",
+  // Vice du consentement mappings
+  vc_passe: "vcPasse",
+  vc_intention: "vcIntention",
+  vc_info_concernait: "vcInfoConcernait",
+  vc_carac_volontaire: "vcCaracVolontaire",
+  vc_valeur_precision: "vcValeurPrecision",
+  vc_determinant_usage: "vcDeterminant",
+  vc_determinant_valeur: "vcDeterminant",
+  vc_determinant_carac: "vcDeterminant",
+  vc_souhait_usage: "vcSouhait",
+  vc_souhait_valeur: "vcSouhait",
+  vc_souhait_carac: "vcSouhait",
+  vc_vice_souhait: "vcViceSouhait",
 };
 
 function transformAnswerValue(stepId: string, value: string): unknown {
@@ -264,6 +277,8 @@ export default function Wizard() {
       type = "depot_garantie";
     } else if (procedureAnswers.empTypeFaute !== undefined || procedureAnswers.empMotif === "insuffisance") {
       type = "licenciement";
+    } else if (procedureAnswers.vcInfoConcernait !== undefined) {
+      type = "vice_consentement";
     }
     const payload = {
       title: `Procédure du ${new Date().toLocaleDateString("fr-FR")}`,

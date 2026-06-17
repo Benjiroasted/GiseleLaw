@@ -42,6 +42,11 @@ function getProcedureLabel(type: string, answers: ProcedureAnswers): string {
         : "faute lourde";
     return `Contestation de licenciement — ${faute}`;
   }
+  if (type === "vice_consentement") {
+    return answers.vcCaracVolontaire === "non"
+      ? "Vice caché lors de la vente"
+      : "Vice du consentement (dol) lors de la vente";
+  }
   return "Procédure en cours";
 }
 
@@ -49,6 +54,7 @@ function getCategory(type: string): ProcedureInfo["category"] {
   if (type === "contrat_vente_non_paye") return "civil";
   if (type === "depot_garantie") return "immobilier";
   if (type === "licenciement") return "travail";
+  if (type === "vice_consentement") return "civil";
   return "autre";
 }
 
@@ -208,6 +214,39 @@ function buildTimeline(type: string, answers: ProcedureAnswers): TimelineStep[] 
       },
     ];
     return steps;
+  }
+
+  if (type === "vice_consentement") {
+    const isViceCache = answers.vcCaracVolontaire === "non";
+    return [
+      {
+        id: "questionnaire",
+        title: "Questionnaire complété",
+        description: "Fiche juridique générée",
+        status: "done",
+      },
+      {
+        id: "med",
+        title: "Mise en demeure amiable",
+        description: "Courrier RAR pour formuler votre demande",
+        status: "current",
+        reminderText: "Envoyez votre mise en demeure",
+      },
+      {
+        id: "conciliation",
+        title: "Tentative de conciliation ou médiation",
+        description: "Préalable amiable avant la saisine du juge",
+        status: "upcoming",
+      },
+      {
+        id: "action_juge",
+        title: "Action devant le juge",
+        description: isViceCache
+          ? "Garantie des vices cachés — délai : 2 ans (article 1648 du code civil)"
+          : "Action en nullité pour dol — délai : 5 ans (article 2224 du code civil)",
+        status: "upcoming",
+      },
+    ];
   }
 
   // Fallback
