@@ -4,17 +4,15 @@ import { motion } from "framer-motion";
 import {
   ArrowRight,
   Briefcase,
-  ShieldCheck,
-  FileSearch,
   CheckCircle2,
-  Users,
   ClipboardList,
   Inbox,
   Handshake,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Layout } from "@/components/Layout";
+import { FaqSection } from "@/components/FaqSection";
+import { LAWYER_FAQ_GENERAL, LAWYER_FAQ_SUBSCRIPTIONS } from "@/data/faqContent";
 
 interface PricingTier {
   name: string;
@@ -29,75 +27,88 @@ interface PricingTier {
 const PRICING_TIERS: PricingTier[] = [
   {
     name: "Découverte",
-    tagline: "Pour tester la plateforme",
+    tagline: "Inscription gratuite, paiement à l'unité",
     ctaLabel: "Créer mon espace",
     ctaHref: "/avocats/inscription",
     features: [
-      "Profil public dans l'annuaire",
-      "Vérification CNB systématique",
-      "Réception des demandes qualifiées",
-      "Dashboard basique (rappels, dossiers)",
-      "Sans engagement",
+      "Inscription gratuite et création de votre profil",
+      "Réception de demandes ciblées selon votre expertise et votre zone géographique",
+      "Libre de sélectionner les demandes qui vous intéressent",
+      "Paiement uniquement lorsque vous proposez votre accompagnement",
+      "Les demandes sont envoyées à plusieurs avocats : la réactivité est clé",
+      "Mise en relation via la plateforme, puis gestion directe et autonome avec votre client",
     ],
   },
   {
-    name: "Cabinet",
-    tagline: "Pour les avocats en exercice individuel",
+    name: "Essentiel",
+    tagline: "Un abonnement mensuel pour maîtriser votre budget",
     ctaLabel: "Bientôt disponible",
     ctaHref: "/avocats/inscription",
     features: [
-      "Tout de Découverte",
-      "Prises de contact illimitées",
-      "Profil enrichi (photo, témoignages)",
-      "Calendrier de réservation en ligne",
-      "Statistiques de conversion",
+      "Abonnement mensuel incluant un nombre défini de réponses",
+      "Une fois ce quota atteint, paiement à l'unité pour chaque réponse supplémentaire",
+      "Réception de demandes ciblées selon votre expertise et votre zone géographique",
+      "Permet de maîtriser votre budget et votre volume de dossiers",
+      "Mise en relation via la plateforme, puis gestion directe et autonome avec votre client",
     ],
   },
   {
-    name: "Premium",
-    tagline: "Pour développer votre clientèle",
+    name: "Pro",
+    tagline: "Réponses illimitées pour une activité soutenue",
     ctaLabel: "Bientôt disponible",
     ctaHref: "/avocats/inscription",
     badge: "Recommandé",
     highlighted: true,
     features: [
-      "Tout de Cabinet",
-      "Mise en avant locale (top 3 par spécialité)",
-      "Suivi des dossiers (timeline, rappels)",
-      "Branding personnalisé",
-      "Support prioritaire",
+      "Abonnement mensuel avec réponses illimitées",
+      "Priorité d'affichage de vos réponses auprès des utilisateurs",
+      "Réception de demandes ciblées selon votre expertise et votre zone géographique",
+      "Adapté à une activité soutenue et régulière",
+      "Mise en relation via la plateforme, puis gestion directe et autonome avec votre client",
     ],
   },
   {
-    name: "Enterprise",
-    tagline: "Pour les cabinets multi-avocats",
+    name: "Cabinet",
+    tagline: "Pour plusieurs avocats d'un même cabinet",
     ctaLabel: "Nous contacter",
-    ctaHref: "mailto:contact@gisele.law?subject=Plan%20Enterprise",
+    ctaHref: "mailto:contact@gisele.law?subject=Plan%20Cabinet",
     features: [
-      "Tout de Premium",
-      "Comptes multi-collaborateurs",
-      "API d'intégration",
-      "Account manager dédié",
-      "SLA contractuel",
+      "Abonnement mensuel pour plusieurs avocats",
+      "Réponses illimitées pour l'ensemble du cabinet",
+      "Tarif préférentiel par avocat, dégressif selon le nombre d'utilisateurs",
+      "Accès partagé aux demandes et organisation libre en interne",
+      "Pensé pour structurer et développer l'activité du cabinet",
     ],
   },
 ];
 
-const HOW_IT_WORKS = [
+interface HowItWorksStep {
+  icon: typeof ClipboardList;
+  title: string;
+  text: string;
+  bullets?: string[];
+}
+
+const HOW_IT_WORKS: HowItWorksStep[] = [
   {
     icon: ClipboardList,
-    title: "Le justiciable qualifie son dossier",
-    text: "Il répond à un questionnaire juridique guidé qui structure sa situation, identifie le cadre légal applicable et les démarches déjà engagées.",
+    title: "Des demandes clarifiées en amont",
+    text: "Les utilisateurs décrivent leur situation juridique ou leur besoin d'éclairage via un questionnaire guidé. Gisèle leur fournit une synthèse du cadre légal applicable et des démarches envisageables, notamment celles pouvant être réalisées de manière autonome. Ce travail en amont permet :",
+    bullets: [
+      "d'écarter certaines situations pouvant se résoudre sans accompagnement",
+      "de mieux qualifier les demandes nécessitant l'intervention d'un professionnel",
+      "de vous donner une première vision du domaine concerné et du contexte",
+    ],
   },
   {
     icon: Inbox,
-    title: "Vous recevez les dossiers pertinents",
-    text: "Filtrage automatique par spécialité, ville et éligibilité à l'aide juridictionnelle. Vous ne voyez que ce qui correspond à votre pratique.",
+    title: "Inscrivez-vous et recevez des demandes ciblées",
+    text: "Pour accéder aux demandes, vous créez votre profil sur Gisèle. L'inscription comprend une vérification de votre qualité d'avocat, puis la configuration de votre profil (domaines d'intervention, zone géographique, modalités d'intervention…), après avoir choisi l'abonnement qui vous convient le mieux. Une fois votre profil actif, vous recevez des demandes correspondant à votre expertise et pouvez choisir d'y répondre en proposant votre accompagnement.",
   },
   {
     icon: Handshake,
-    title: "Vous prenez contact en un clic",
-    text: "Le contexte est déjà documenté : situation, pièces, délais. Vous engagez la relation client directement, sans perte de temps en pré-qualification.",
+    title: "Entrez en relation et exercez librement",
+    text: "Si un utilisateur souhaite poursuivre avec vous, la mise en relation se fait simplement via la plateforme pour un premier échange. La suite de la relation (rendez-vous, conseil, procédure, honoraires) se déroule ensuite directement entre vous et votre client, selon vos pratiques habituelles. Gisèle n'intervient pas dans la gestion du dossier.",
   },
 ];
 
@@ -122,17 +133,18 @@ export default function AvocatsLanding() {
             Espace professionnels
           </div>
           <h1 className="text-4xl md:text-6xl font-bold font-serif text-primary tracking-tight mb-6 leading-tight">
-            Des prospects{" "}
+            Des demandes{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-amber-500">
-              déjà qualifiés
+              déjà clarifiées
             </span>
-            <br />
-            arrivent dans votre cabinet
+            ,<br />
+            directement dans votre domaine d'expertise
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Gisèle pré-structure les dossiers via un questionnaire juridique guidé.
-            Vous recevez la situation, le cadre légal applicable, et les démarches
-            déjà engagées par le justiciable — pas une simple demande de contact.
+            Gisèle structure en amont les situations via un questionnaire guidé.
+            Vous recevez alors des demandes qualifiées, avec une vision claire du
+            contexte et du cadre juridique, et pouvez proposer votre
+            accompagnement si le dossier vous correspond.
           </p>
         </motion.div>
 
@@ -169,6 +181,19 @@ export default function AvocatsLanding() {
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {step.text}
                 </p>
+                {step.bullets && (
+                  <ul className="mt-3 space-y-1.5">
+                    {step.bullets.map((b) => (
+                      <li
+                        key={b}
+                        className="flex items-start gap-2 text-sm text-muted-foreground"
+                      >
+                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </motion.div>
             ))}
           </div>
@@ -197,42 +222,36 @@ export default function AvocatsLanding() {
           </div>
         </section>
 
-        {/* ── Trust strip ─────────────────────────────────────────────── */}
-        <div className="bg-primary/5 rounded-3xl p-8 md:p-12 mb-12">
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: ShieldCheck,
-                title: "Vérification CNB",
-                text: "Chaque inscription est croisée avec l'annuaire officiel du Conseil National des Barreaux.",
-              },
-              {
-                icon: FileSearch,
-                title: "Dossiers structurés",
-                text: "Vous recevez la situation, le cadre légal et les démarches déjà engagées — pas de demandes vagues.",
-              },
-              {
-                icon: Users,
-                title: "Mise en relation ciblée",
-                text: "Filtrage par spécialité, ville et aide juridictionnelle pour des prospects pertinents.",
-              },
-            ].map(({ icon: Icon, title, text }) => (
-              <div key={title}>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <h4 className="font-serif font-bold text-primary leading-tight">
-                    {title}
-                  </h4>
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {text}
-                </p>
-              </div>
-            ))}
+        {/* ── FAQ avocats ─────────────────────────────────────────────── */}
+        <section className="mb-20">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-primary mb-4">
+              Questions fréquentes
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Tout ce qu'il faut savoir sur le fonctionnement de la plateforme
+              et les abonnements.
+            </p>
           </div>
-        </div>
+
+          <div className="max-w-3xl mx-auto space-y-10">
+            <div>
+              <h3 className="text-lg font-serif font-bold text-primary mb-2">
+                La plateforme
+              </h3>
+              <FaqSection items={LAWYER_FAQ_GENERAL} idPrefix="lawyer-faq" />
+            </div>
+            <div>
+              <h3 className="text-lg font-serif font-bold text-primary mb-2">
+                Les abonnements
+              </h3>
+              <FaqSection
+                items={LAWYER_FAQ_SUBSCRIPTIONS}
+                idPrefix="lawyer-faq-subs"
+              />
+            </div>
+          </div>
+        </section>
 
         {/* ── Final CTA ───────────────────────────────────────────────── */}
         <div className="text-center">
