@@ -13,6 +13,7 @@ import Practitioners from "@/pages/Practitioners";
 import PractitionerProfile from "@/pages/PractitionerProfile";
 import AvocatsLanding from "@/pages/AvocatsLanding";
 import AvocatInscription from "@/pages/AvocatInscription";
+import FaqUtilisateurs from "@/pages/FaqUtilisateurs";
 import AdminLawyers from "@/pages/AdminLawyers";
 import { useAuth } from "@/hooks/use-auth";
 import { RoleGate } from "@/components/RoleGate";
@@ -31,6 +32,7 @@ function Router() {
       <Route path="/procedure/:id/result" component={Result} />
       <Route path="/practitioners" component={Practitioners} />
       <Route path="/practitioners/:id" component={PractitionerProfile} />
+      <Route path="/faq" component={FaqUtilisateurs} />
 
       {/* Lawyer-side public pages */}
       <Route path="/avocats" component={AvocatsLanding} />

@@ -368,7 +368,7 @@ export const WIZARD_STEPS: WizardStep[] = [
       {
         label: "Je pense avoir été trompé(e) ou mal informé(e) lors de la vente",
         value: "trompe_vente",
-        next: PLACEHOLDER_NEXT,
+        next: "vc_passe",
       },
       {
         label: "Je pense avoir été trompé(e) ou mal informé(e) lors de l'achat",
@@ -440,6 +440,233 @@ export const WIZARD_STEPS: WizardStep[] = [
       },
       { label: "Le vendeur s'est rétracté", value: "vendeur_retracte", next: PLACEHOLDER_NEXT },
       { label: "L'acheteur s'est rétracté", value: "acheteur_retracte", next: PLACEHOLDER_NEXT },
+    ],
+  },
+
+  // ══════════════════════════════════════════════════════════════
+  //  BRANCHE : VICE DU CONSENTEMENT (dol / vice caché)
+  //  Entrée : step_6a → trompe_vente → vc_passe
+  //  Fiches 128-143
+  // ══════════════════════════════════════════════════════════════
+
+  // ──────────── VC : Que s'est-il passé ? ────────────
+  {
+    id: "vc_passe",
+    question: "Que s'est-il passé ?",
+    options: [
+      {
+        label: "On m'a donné une information fausse",
+        value: "info_fausse",
+        chipLabel: "Information fausse",
+        next: "vc_intention",
+      },
+      {
+        label: "On ne m'a pas donné une information importante",
+        value: "info_manquante",
+        chipLabel: "Information cachée",
+        next: "vc_intention",
+      },
+      {
+        label: "Je me suis trompé(e) moi-même",
+        value: "erreur_soi",
+        chipLabel: "Erreur personnelle",
+        next: PLACEHOLDER_NEXT,
+      },
+    ],
+  },
+
+  // ──────────── VC : Intention de l'autre personne ────────────
+  {
+    id: "vc_intention",
+    question: "Selon vous, l'autre personne a :",
+    options: [
+      {
+        label: "Menti ou caché l'information volontairement",
+        value: "menti_volontaire",
+        chipLabel: "Volontaire",
+        next: "vc_info_concernait",
+      },
+      {
+        label: "Simplement oublié, s'est trompée, ignorait l'information",
+        value: "oubli_ignorance",
+        chipLabel: "Non volontaire",
+        next: PLACEHOLDER_NEXT,
+      },
+    ],
+  },
+
+  // ──────────── VC : Sur quoi portait l'information ? ────────────
+  {
+    id: "vc_info_concernait",
+    question: "Cette information concernait :",
+    options: [
+      {
+        label: "Les caractéristiques du bien",
+        sublabel: "état, défauts, fonctionnement…",
+        value: "caracteristiques",
+        chipLabel: "Caractéristiques",
+        next: "vc_carac_volontaire",
+      },
+      {
+        label: "L'usage possible du bien",
+        sublabel: "usage commercial, possibilité de louer, appareil fonctionnel…",
+        value: "usage",
+        chipLabel: "Usage du bien",
+        next: "vc_determinant_usage",
+      },
+      {
+        label: "L'identité ou la situation de la personne",
+        sublabel: "solvabilité, identité, statut, réputation…",
+        value: "identite",
+        chipLabel: "Identité / situation",
+        next: "vc_determinant_usage",
+      },
+      {
+        label: "La valeur du bien / objet",
+        value: "valeur",
+        chipLabel: "Valeur du bien",
+        next: "vc_valeur_precision",
+      },
+    ],
+  },
+
+  // ──────────── VC : Caractéristiques → intention confirmée ? ────────────
+  {
+    id: "vc_carac_volontaire",
+    question: "Pensez-vous que l'autre personne a volontairement menti ou caché cette information ?",
+    options: [
+      { label: "Oui", value: "oui", chipLabel: "Volontaire: oui", next: "vc_determinant_carac" },
+      {
+        label: "Non",
+        sublabel: "il s'agissait peut-être d'un défaut caché",
+        value: "non",
+        chipLabel: "Volontaire: non",
+        next: "vc_vice_souhait",
+      },
+    ],
+  },
+
+  // ──────────── VC : Valeur → précision ────────────
+  {
+    id: "vc_valeur_precision",
+    question: "Plus précisément, le problème porte sur :",
+    options: [
+      {
+        label: "La valeur réelle du bien",
+        sublabel: "faussée par un mensonge ou une dissimulation",
+        value: "valeur_reelle",
+        chipLabel: "Valeur réelle",
+        next: "vc_determinant_valeur",
+      },
+      {
+        label: "L'estimation de la valeur par l'acheteur",
+        sublabel: "vous estimez l'avoir vendu trop peu cher",
+        value: "estimation",
+        chipLabel: "Estimation",
+        next: SUMMARY_STEP_ID, // → Fiche 132
+      },
+    ],
+  },
+
+  // ──────────── VC : Caractère déterminant (3 contextes, même structure) ────────────
+  {
+    id: "vc_determinant_usage",
+    question: "Sans cette information, auriez-vous contracté ?",
+    options: [
+      { label: "Non, j'aurais refusé", value: "non_refuse", chipLabel: "Aurait refusé", next: "vc_souhait_usage" },
+      {
+        label: "Oui, mais à des conditions différentes",
+        sublabel: "ex : à un moindre prix",
+        value: "conditions_diff",
+        chipLabel: "Conditions diff.",
+        next: "vc_souhait_usage",
+      },
+      { label: "Oui, quand même", value: "oui_quand_meme", chipLabel: "Quand même", next: SUMMARY_STEP_ID }, // → F128
+    ],
+  },
+  {
+    id: "vc_determinant_valeur",
+    question: "Sans cette information, auriez-vous contracté ?",
+    options: [
+      { label: "Non, j'aurais refusé", value: "non_refuse", chipLabel: "Aurait refusé", next: "vc_souhait_valeur" },
+      {
+        label: "Oui, mais à des conditions différentes",
+        sublabel: "ex : à un moindre prix",
+        value: "conditions_diff",
+        chipLabel: "Conditions diff.",
+        next: "vc_souhait_valeur",
+      },
+      { label: "Oui, quand même", value: "oui_quand_meme", chipLabel: "Quand même", next: SUMMARY_STEP_ID }, // → F133
+    ],
+  },
+  {
+    id: "vc_determinant_carac",
+    question: "Sans cette information, auriez-vous contracté ?",
+    options: [
+      { label: "Non, j'aurais refusé", value: "non_refuse", chipLabel: "Aurait refusé", next: "vc_souhait_carac" },
+      {
+        label: "Oui, mais à des conditions différentes",
+        sublabel: "ex : à un moindre prix",
+        value: "conditions_diff",
+        chipLabel: "Conditions diff.",
+        next: "vc_souhait_carac",
+      },
+      { label: "Oui, quand même", value: "oui_quand_meme", chipLabel: "Quand même", next: SUMMARY_STEP_ID }, // → F137
+    ],
+  },
+
+  // ──────────── VC : Que souhaitez-vous faire ? (dol) ────────────
+  {
+    id: "vc_souhait_usage",
+    question: "Que souhaitez-vous faire ?",
+    options: [
+      { label: "Annuler le contrat", value: "annuler", chipLabel: "Annuler", next: SUMMARY_STEP_ID }, // → F129
+      { label: "Être indemnisé(e)", value: "indemnise", chipLabel: "Indemnisation", next: SUMMARY_STEP_ID }, // → F130
+      { label: "Les deux", value: "les_deux", chipLabel: "Les deux", next: SUMMARY_STEP_ID }, // → F131
+    ],
+  },
+  {
+    id: "vc_souhait_valeur",
+    question: "Que souhaitez-vous faire ?",
+    options: [
+      { label: "Annuler le contrat", value: "annuler", chipLabel: "Annuler", next: SUMMARY_STEP_ID }, // → F134
+      { label: "Être indemnisé(e)", value: "indemnise", chipLabel: "Indemnisation", next: SUMMARY_STEP_ID }, // → F135
+      { label: "Les deux", value: "les_deux", chipLabel: "Les deux", next: SUMMARY_STEP_ID }, // → F136
+    ],
+  },
+  {
+    id: "vc_souhait_carac",
+    question: "Que souhaitez-vous faire ?",
+    options: [
+      { label: "Annuler le contrat", value: "annuler", chipLabel: "Annuler", next: SUMMARY_STEP_ID }, // → F138
+      { label: "Être indemnisé(e)", value: "indemnise", chipLabel: "Indemnisation", next: SUMMARY_STEP_ID }, // → F139
+      { label: "Les deux", value: "les_deux", chipLabel: "Les deux", next: SUMMARY_STEP_ID }, // → F140
+    ],
+  },
+
+  // ──────────── VC : Vice caché → que souhaitez-vous faire ? ────────────
+  {
+    id: "vc_vice_souhait",
+    question: "Que souhaitez-vous faire ?",
+    options: [
+      {
+        label: "Annuler le contrat et obtenir la restitution du prix",
+        value: "annulation",
+        chipLabel: "Annulation",
+        next: SUMMARY_STEP_ID, // → F141
+      },
+      {
+        label: "Demander une réduction du prix",
+        value: "reduction",
+        chipLabel: "Réduction prix",
+        next: SUMMARY_STEP_ID, // → F142
+      },
+      {
+        label: "Demander le remplacement ou la réparation du bien",
+        value: "remplacement",
+        chipLabel: "Remplacement",
+        next: SUMMARY_STEP_ID, // → F143
+      },
     ],
   },
 
@@ -1263,6 +1490,12 @@ const STEP_TO_SECTION: Record<string, string> = {
   // Détails (everything else before recap)
   step_6: "details", step_6a: "details", step_6b: "details", step_6c: "details",
   step_7: "details", step_8: "details",
+  // Vice du consentement details
+  vc_passe: "details", vc_intention: "details", vc_info_concernait: "details",
+  vc_carac_volontaire: "details", vc_valeur_precision: "details",
+  vc_determinant_usage: "details", vc_determinant_valeur: "details",
+  vc_determinant_carac: "details", vc_souhait_usage: "details",
+  vc_souhait_valeur: "details", vc_souhait_carac: "details", vc_vice_souhait: "details",
   // Depot garantie details
   dg_edl: "details", dg_c1_degradations: "details", dg_c1_d_delai: "details",
   dg_c1_c_delai: "details", dg_info_2mois: "details", dg_info_1mois: "details",

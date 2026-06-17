@@ -197,7 +197,7 @@ export default function Home() {
               <div className="p-6 md:p-8 flex flex-col h-full">
                 <div className="mb-3">
                   <h3 className="text-xl md:text-2xl font-serif font-bold text-primary leading-tight">
-                    Pour les particuliers ou les entreprises
+                    Pour les particuliers ou les entreprises :
                   </h3>
                 </div>
                 <p className="text-sm text-muted-foreground mb-6">
@@ -286,8 +286,17 @@ export default function Home() {
                   </motion.div>
                 </div>
 
-                <div className="mt-8">
-                  <Link href="/procedure/new/wizard">
+                <div className="mt-8 flex flex-col sm:flex-row items-stretch gap-3">
+                  <Link href="/faq" className="flex-1">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="w-full h-12 px-6 rounded-full"
+                    >
+                      En savoir plus
+                    </Button>
+                  </Link>
+                  <Link href="/procedure/new/wizard" className="flex-1">
                     <Button
                       size="lg"
                       className="w-full h-12 px-6 rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:-translate-y-0.5 transition-all bg-primary hover:bg-primary/90 text-white"
@@ -311,7 +320,7 @@ export default function Home() {
               <div className="p-6 md:p-8 flex flex-col h-full">
                 <div className="mb-3">
                   <h3 className="text-xl md:text-2xl font-serif font-bold text-primary leading-tight">
-                    Pour les avocats
+                    Pour les avocats :
                   </h3>
                 </div>
                 <p className="text-sm text-muted-foreground mb-6">
@@ -336,13 +345,16 @@ export default function Home() {
                           Étape 1
                         </div>
                         <h4 className="text-base font-semibold font-serif text-primary leading-tight">
-                          Le justiciable qualifie son dossier
+                          Des demandes qualifiées en amont
                         </h4>
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Il répond au questionnaire guidé de Gisèle qui structure
-                      sa situation, le cadre légal et les démarches engagées.
+                      Des particuliers et professionnels décrivent leur
+                      situation via un questionnaire structuré. Chaque demande
+                      est clarifiée en amont (contexte, cadre juridique, besoin),
+                      pour vous permettre d'intervenir sur des dossiers
+                      pertinents.
                     </p>
                   </motion.div>
 
@@ -362,14 +374,15 @@ export default function Home() {
                           Étape 2
                         </div>
                         <h4 className="text-base font-semibold font-serif text-primary leading-tight">
-                          Vous recevez les dossiers pertinents
+                          Inscrivez-vous et recevez des dossiers ciblés
                         </h4>
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Filtrage automatique par spécialité, ville et
-                      éligibilité à l'aide juridictionnelle — uniquement ce
-                      qui correspond à votre pratique.
+                      Créez votre profil et définissez vos domaines
+                      d'intervention. Vous recevez des demandes correspondant à
+                      votre expertise et pouvez choisir d'y répondre en
+                      proposant un accompagnement.
                     </p>
                   </motion.div>
 
@@ -389,14 +402,14 @@ export default function Home() {
                           Étape 3
                         </div>
                         <h4 className="text-base font-semibold font-serif text-primary leading-tight">
-                          Vous prenez contact en un clic
+                          Entrez en relation simplement
                         </h4>
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Le contexte est déjà documenté : situation, pièces,
-                      délais. Vous engagez la relation client sans perte de
-                      temps.
+                      Échangez avec les utilisateurs intéressés en quelques
+                      clics. La relation se poursuit ensuite directement entre
+                      vous et votre client, selon vos modalités habituelles.
                     </p>
                   </motion.div>
                 </div>

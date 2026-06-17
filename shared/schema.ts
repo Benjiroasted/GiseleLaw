@@ -63,6 +63,15 @@ export interface ProcedureAnswers {
   problemDetail?: string;
   amount?: "less_5000" | "more_5000";
   miseEnDemeure?: boolean;
+  // Vice du consentement branch (dol / vice caché) — fiches 128-143
+  vcPasse?: "info_fausse" | "info_manquante" | "erreur_soi";
+  vcIntention?: "menti_volontaire" | "oubli_ignorance";
+  vcInfoConcernait?: "caracteristiques" | "usage" | "identite" | "valeur";
+  vcCaracVolontaire?: "oui" | "non";
+  vcValeurPrecision?: "valeur_reelle" | "estimation";
+  vcDeterminant?: "non_refuse" | "conditions_diff" | "oui_quand_meme";
+  vcSouhait?: "annuler" | "indemnise" | "les_deux";
+  vcViceSouhait?: "annulation" | "reduction" | "remplacement";
   /** Legacy / optional */
   [key: string]: unknown;
 }

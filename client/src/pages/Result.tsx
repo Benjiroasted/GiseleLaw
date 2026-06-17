@@ -15,6 +15,10 @@ import {
   type FicheContent,
 } from "@/data/ficheContent";
 import { getLicenciementFiche } from "@/data/emploiFiches";
+import {
+  getViceConsentementFicheNumber,
+  getViceConsentementFiche,
+} from "@/data/viceConsentementFiches";
 import type { ProcedureAnswers } from "@shared/schema";
 
 export default function Result() {
@@ -98,6 +102,13 @@ export default function Result() {
 
   if (procedure.type === "licenciement" && answers.empTypeFaute) {
     fiche = getLicenciementFiche(answers.empTypeFaute as string);
+  }
+
+  if (procedure.type === "vice_consentement") {
+    const ficheNum = getViceConsentementFicheNumber(answers);
+    if (ficheNum !== null) {
+      fiche = getViceConsentementFiche(ficheNum);
+    }
   }
 
   // ── Render fiche if found ──
